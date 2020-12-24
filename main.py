@@ -7,7 +7,7 @@ from modules.dataset_supervisor import DatasetSupervisor
 from modules.data_exchanger import DataExchanger
 import carla
 
-import carla.run as run
+from carla.run import CarlaWorld
 from datetime import datetime
 
 def get_current_time():
@@ -33,18 +33,27 @@ def main():
     data_exchanger = DataExchanger()
     bmnet = BMNet()
     forever = True
+    # TODO: change it to carlaworld
+    env = None
 
     print("INCREMENTAL INTELLIGENCE SYSTEM OPERATING...")
     while forever:
         # Collect novel online data in daytime.
         print("START COLLECTING ONLINE DATA...")
+        current_state = env.reset()
         while current_time - start_time < 2 is True:
 
-            online_data = run.get_state(bmnet)
-            predicted_behavior, predicted_motion = bmnet(online_data)
-            if data_filter.is_novel(online_data, predicted_behavior, predicted_motion):
-                data_exchanger.exchange([online_data, predicted_behavior, predicted_motion])
+            predicted_behavior, predicted_motion = bmnet(current_state)
+            next_state, info = env.step(predicted_motion)
 
+            if info["disengagement"] is True:
+                # record it then could make it runable afterward by expert human
+                return
+
+            if data_filter.is_novel(current_state, predicted_behavior, predicted_motion):
+                data_exchanger.exchange([current_state, predicted_behavior, predicted_motion])
+
+            current_state = next_state
             current_time = get_current_time()
 
         print("END COLLECTING ONLINE DATA...")
@@ -54,7 +63,7 @@ def main():
         updated_bmnet = train_bmnet(bmnet, dataset)
 
         # TODO: Save updated bmnet model
-        updated_bmnet_dir = ""
+        updated_bmnet_dir = "./trained_model/"
 
         # TODO: Update bmnet
         bmnet = updated_bmnet

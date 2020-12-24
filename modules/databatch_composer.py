@@ -12,7 +12,7 @@ class DataBatchComposer():
         tmp_databatch = self.extract_batch()
         tmp_entropy = self.compute_entropy(tmp_databatch)
 
-        # TODO: for databatch_size > 1
+        # TODO: For databatch_size > 1
         while tmp_entropy < self.entropy_threshold:
             tmp_databatch = self.extract_batch()
             tmp_entropy = self.compute_entropy(tmp_databatch)
