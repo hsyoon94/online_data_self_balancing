@@ -22,7 +22,10 @@ class DataFilter():
         pb_prob = self.pm(online_behavior, online_state)
         po_prob = self.pm(online_state)
 
-        if  pm_prob * pb_prob * po_prob > self.pmbo_threshold:
+        random = np.random.uniform(0, 1)
+
+        # if  pm_prob * pb_prob * po_prob > self.pmbo_threshold:
+        if random > 0.5:
             return True
         else:
             return False

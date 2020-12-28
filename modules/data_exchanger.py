@@ -7,6 +7,7 @@ class DataExchanger():
     def __init__(self, dataset):
         self.dataset = dataset
 
+    # Exchange data one by one.
     def exchange(self, online_novel_data):
         discard_data = self.select_discard_data()
 

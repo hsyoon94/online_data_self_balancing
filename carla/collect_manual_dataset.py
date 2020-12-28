@@ -190,7 +190,8 @@ class World(object):
         self.player_max_speed = 1.589
         self.player_max_speed_fast = 3.713
         # Keep same camera config if the camera manager exists.
-        cam_index = self.camera_manager.index if self.camera_manager is not None else 5
+        # 5 : semantic segmentation, 0 : rgb
+        cam_index = self.camera_manager.index if self.camera_manager is not None else 0
         cam_pos_index = self.camera_manager.transform_index if self.camera_manager is not None else 0
         # Get a random blueprint.
         blueprint = random.choice(self.world.get_blueprint_library().filter(self._actor_filter))
