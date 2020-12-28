@@ -76,6 +76,7 @@ except IndexError:
 import carla
 
 from carla import ColorConverter as cc
+from datetime import datetime as tmp_datetime
 
 import argparse
 import collections
@@ -1011,14 +1012,19 @@ class CameraManager(object):
             array = array[:, :, ::-1]
             self.surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
         if self.recording:
+
+            now = tmp_datetime.now()
+            now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
+            now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
+
             # print(image)
             # image.save_to_disk('_out/%08d' % image.frame)
             try:
                 print("Current Action", self.current_action)
                 current_action = np.array([self.current_action.throttle, self.current_action.steer, self.current_action.brake])
                 if int(image.frame) % 5 == 0:
-                    np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/%08d.txt' % image.frame, current_action)
-                    image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/%08d' % image.frame)
+                    np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
+                    image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
             except AttributeError as AE:
                 print(AE)
                 print("Warming up for action connection...")
