@@ -255,8 +255,6 @@ class World(object):
         actor_type = get_actor_display_name(self.player)
         self.hud.notification(actor_type)
 
-
-
     def update_current_action(self, current_action):
         self.current_action = current_action
         self.camera_manager.current_action = current_action
@@ -457,9 +455,7 @@ class KeyboardControl(object):
                     world.player.set_light_state(carla.VehicleLightState(self._lights))
             elif isinstance(self._control, carla.WalkerControl):
                 self._parse_walker_keys(pygame.key.get_pressed(), clock.get_time(), world)
-            print(self._control)
             world.current_action = self._control
-            print(world.current_action)
             world.player.apply_control(self._control)
 
     def get_motion(self):
@@ -1038,7 +1034,7 @@ class CameraManager(object):
         if self.recording:
 
             try:
-                print("Current Action", self.current_action)
+                # print("Current Action", self.current_action)
                 current_action = np.array([self.current_action.throttle, self.current_action.steer, self.current_action.brake])
 
                 now = tmp_datetime.now()
@@ -1076,8 +1072,9 @@ class CameraManager(object):
                         # data['motion'] = self.motion_sequence_numpy.tolist()
                         data['motion'] = current_action.tolist()
 
-                        with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(image.frame) + ".json", 'w', encoding='utf-8') as make_file:
-                            json.dump(data, make_file, indent="\t")
+                        if self.state_sequence_numpy.shape[0] == 3:
+                            with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(image.frame) + ".json", 'w', encoding='utf-8') as make_file:
+                                json.dump(data, make_file, indent="\t")
 
                     else:
                         print("Current online data is tedious!")
@@ -1105,9 +1102,7 @@ def game_loop(args):
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
 
-        display = pygame.display.set_mode(
-            (args.width, args.height),
-            pygame.HWSURFACE | pygame.DOUBLEBUF)
+        display = pygame.display.set_mode((args.width, args.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
 
         hud = HUD(args.width, args.height)
         world = World(client.get_world(), hud, args)

@@ -36,24 +36,28 @@ class MNet(nn.Module):
         self.CNN2 = nn.Conv2d(self.cnn_mid_channel, 3, 1, stride=3).to(self.device)
         self.MaxPool1 = nn.MaxPool2d(3, 1).to(self.device)
 
-        self.F1 = nn.Linear(6724, self.F1_DIM).to(self.device)
+        self.F1 = nn.Linear(324, self.F1_DIM).to(self.device)
         self.F2 = nn.Linear(self.F1_DIM, self.F2_DIM).to(self.device)
         self.F3 = nn.Linear(self.F2_DIM, self.motion_shape).to(self.device)
 
-        self.model = nn.Sequential(
-            self.CNN1,
-            self.CNN2,
-            self.MaxPool1,
-            self.F1,
-            self.ReLU,
-            self.F2,
-            self.ReLU,
-            self.F3,
-            self.Sigmoid
-        )
-
     def forward(self, state):
-        motion = self.model(state)
+
+        motion = self.CNN1(state)
+        motion = self.CNN2(motion)
+        motion = self.MaxPool1(motion)
+
+        self.F1_DIM = motion.shape[0] * motion.shape[1] * motion.shape[2] * motion.shape[3]
+        motion = motion.view(-1, self.F1_DIM)  # reshape Variable
+
+        motion = self.F1(motion)
+        motion = self.ReLU(motion)
+
+        motion = self.F2(motion)
+        motion = self.ReLU(motion)
+
+        motion = self.F3(motion)
+        motion = self.Sigmoid(motion)
+
         return motion
 
 

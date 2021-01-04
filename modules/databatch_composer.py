@@ -9,7 +9,7 @@ class DataBatchComposer():
         self.databatch_size = databatch_size
         self.databatch_entropy = 0
 
-    def get_databatch(self):
+    def get_databatch_list(self):
         # tmp_databatch = self.extract_batch()
         # tmp_entropy = self.compute_entropy(tmp_databatch)
         #
@@ -20,7 +20,8 @@ class DataBatchComposer():
         # self.databatch = tmp_databatch
         # self.databatch_entropy = tmp_entropy
 
-        self.databatch_list = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 100), replace=False)
+        self.databatch_list = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 100), replace=True)
+
         return self.databatch_list
 
     def compute_entropy(self, databatch):

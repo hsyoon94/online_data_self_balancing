@@ -60,5 +60,7 @@ for index in range(len(image_data_name_list)):
         data['state'] = numpy_to_save.tolist()
         data['motion'] = motion.tolist()
 
-        with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(index) + ".json", 'w', encoding='utf-8') as make_file:
-            json.dump(data, make_file, indent="\t")
+        print("state shape!", numpy_to_save.shape)
+        if numpy_to_save.shape[0] == 3:
+            with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(index) + ".json", 'w', encoding='utf-8') as make_file:
+                json.dump(data, make_file, indent="\t")
