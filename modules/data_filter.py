@@ -1,14 +1,14 @@
 # DE
 
 import numpy as np
-import torch
-import probability
+# import torch
+# import probability
 
 class DataFilter():
-    def __init__(self, pm, pb, po):
-        self.pm = pm
-        self.pb = pb
-        self.po = po
+    def __init__(self):
+        self.pm = None
+        self.pb = None
+        self.po = None
 
         self.pm_threshold = 0.5
         self.pb_threshold = 0.5
@@ -16,11 +16,10 @@ class DataFilter():
 
         self.pmbo_threshold = 0.7
 
-    def is_novel(self, online_state, online_behavior, online_motion):
+    def is_novel(self, online_state, online_motion):
 
-        pm_prob = self.pm(online_motion, online_behavior, online_state)
-        pb_prob = self.pm(online_behavior, online_state)
-        po_prob = self.pm(online_state)
+        # pm_prob = self.pm(online_data[0], online_data[1])
+        # po_prob = self.pm(online_data[0])
 
         random = np.random.uniform(0, 1)
 

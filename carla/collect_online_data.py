@@ -58,14 +58,13 @@ from __future__ import print_function
 import glob
 import os
 import sys
+import copy
 
 from modules.data_filter import DataFilter
+from matplotlib import cm
 
 try:
-    sys.path.append(glob.glob('/home/software/CARLA_0.9.9/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    sys.path.append(glob.glob('/home/software/CARLA_0.9.9/PythonAPI/carla/dist/carla-0.9.9-py3.7-linux-x86_64.egg')[0])
 except IndexError:
     pass
 
@@ -74,9 +73,9 @@ except IndexError:
 # -- imports -------------------------------------------------------------------
 # ==============================================================================
 
-
+import json
 import carla
-
+# import torch
 from carla import ColorConverter as cc
 from datetime import datetime as tmp_datetime
 
@@ -135,11 +134,17 @@ try:
 except ImportError:
     raise RuntimeError('cannot import numpy, make sure numpy package is installed')
 
+DATA_SAVE_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
 
 # ==============================================================================
 # -- Global functions ----------------------------------------------------------
 # ==============================================================================
+def to_bgr_array(image):
+    """Convert a CARLA raw image to a BGRA numpy array."""
+    array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
+    array = np.reshape(array, (image.height, image.width, 4))
 
+    return array[:,:,0:3]
 
 def find_weather_presets():
     rgx = re.compile('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')
@@ -452,9 +457,9 @@ class KeyboardControl(object):
                     world.player.set_light_state(carla.VehicleLightState(self._lights))
             elif isinstance(self._control, carla.WalkerControl):
                 self._parse_walker_keys(pygame.key.get_pressed(), clock.get_time(), world)
-            # print(self._control)
-            # world.current_action = self._control
-            # print(world.current_action)
+            print(self._control)
+            world.current_action = self._control
+            print(world.current_action)
             world.player.apply_control(self._control)
 
     def get_motion(self):
@@ -915,6 +920,15 @@ class CameraManager(object):
         self._parent = parent_actor
         self.current_action = None
         self.hud = hud
+
+        self.state_sequence = list()
+        self.state_sequence_numpy = None
+
+        self.motion_sequence = list()
+        self.motion_sequence_numpy = None
+
+        self.data_filter = DataFilter()
+
         self.recording = True
         bound_y = 0.5 + self._parent.bounding_box.extent.y
         Attachment = carla.AttachmentType
@@ -995,6 +1009,9 @@ class CameraManager(object):
     @staticmethod
     def _parse_image(weak_self, image):
         self = weak_self()
+        make_file = np.array([])
+        save_count = 0
+
         if not self:
             return
         if self.sensors[self.index][0].startswith('sensor.lidar'):
@@ -1017,23 +1034,57 @@ class CameraManager(object):
             array = array[:, :, :3]
             array = array[:, :, ::-1]
             self.surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+
         if self.recording:
 
-            now = tmp_datetime.now()
-            now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
-            now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
-
-            # print(image)
-            # image.save_to_disk('_out/%08d' % image.frame)
             try:
                 print("Current Action", self.current_action)
                 current_action = np.array([self.current_action.throttle, self.current_action.steer, self.current_action.brake])
+
+                now = tmp_datetime.now()
+                now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
+                now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
+
                 if int(image.frame) % 5 == 0:
+                    # TODO: FILTERING
+                    # push to state channel dim (default: 3) array
+                    # push forward that array to p net then filter
 
-                    # FILTERING
+                    tmp_bgr_image = to_bgr_array(image)
 
-                    np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
-                    image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
+                    im = Image.fromarray(tmp_bgr_image)
+                    im = im.resize((64, 64))
+                    tmp_bgr_image = np.array(im)
+
+                    # state sequence not full => warming up
+                    if len(self.state_sequence) >= 3:
+                        self.state_sequence.pop()
+                        self.motion_sequence.pop()
+
+                    self.state_sequence.insert(0, tmp_bgr_image)
+                    self.motion_sequence.insert(0, current_action)
+
+                    self.state_sequence_numpy = np.array(self.state_sequence)
+                    self.motion_sequence_numpy = np.array(self.motion_sequence)
+
+                    if self.data_filter.is_novel(self.state_sequence_numpy, self.motion_sequence_numpy) is True:
+
+                        print("Current online data is novel!")
+
+                        data = dict()
+                        data['state'] = self.state_sequence_numpy.tolist()
+                        # data['motion'] = self.motion_sequence_numpy.tolist()
+                        data['motion'] = current_action.tolist()
+
+                        with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(image.frame) + ".json", 'w', encoding='utf-8') as make_file:
+                            json.dump(data, make_file, indent="\t")
+
+                    else:
+                        print("Current online data is tedious!")
+                        # conver numpy to json then save it
+
+                    # np.savetxt('/media/hsyoon/hard2/SDS/dataset_online/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
+                    # image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
 
             except AttributeError as AE:
                 print(AE)
@@ -1049,7 +1100,7 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute = 5
+    running_time_minute = 0.1
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
@@ -1060,6 +1111,7 @@ def game_loop(args):
 
         hud = HUD(args.width, args.height)
         world = World(client.get_world(), hud, args)
+        # args.autopilot = True
         controller = KeyboardControl(world, args.autopilot)
 
         start_time = get_current_time()
@@ -1093,7 +1145,7 @@ def game_loop(args):
 # ==============================================================================
 
 
-def main():
+def run():
     argparser = argparse.ArgumentParser(
         description='CARLA Manual Control Client')
     argparser.add_argument(
@@ -1155,7 +1207,4 @@ def main():
     except KeyboardInterrupt:
         print('\nCancelled by user. Bye!')
 
-
-if __name__ == '__main__':
-
-    main()
+run()

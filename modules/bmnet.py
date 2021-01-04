@@ -21,7 +21,7 @@ import os
 
 class MNet(nn.Module):
     def __init__(self, state_shape, state_channel, motion_shape, device):
-
+        super(MNet, self).__init__()
         self.state_shape = state_shape
         self.state_channel = state_channel
         self.motion_shape = motion_shape
@@ -31,9 +31,9 @@ class MNet(nn.Module):
         self.F1_DIM = 128
         self.F2_DIM = 64
         self.ReLU = nn.ReLU().to(self.device)
-        self.ReLU = nn.Sigmoid().to(self.device)
-        self.CNN1 = nn.CNN(self.state_channel, self.cnn_mid_channel, stride=3).to(self.device)
-        self.CNN2 = nn.CNN(self.cnn_mid_channel, 3, stride=3).to(self.device)
+        self.Sigmoid = nn.Sigmoid().to(self.device)
+        self.CNN1 = nn.Conv2d(self.state_channel, self.cnn_mid_channel, 1, stride=3).to(self.device)
+        self.CNN2 = nn.Conv2d(self.cnn_mid_channel, 3, 1, stride=3).to(self.device)
         self.MaxPool1 = nn.MaxPool2d(3, 1).to(self.device)
 
         self.F1 = nn.Linear(6724, self.F1_DIM).to(self.device)
