@@ -6,11 +6,19 @@ import json
 
 import math
 from PIL import Image
+
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 import PIL.Image as pilimg
 import numpy as np
 import time
 from datetime import datetime
 import numpy
+import struct
+
+import warnings
+warnings.filterwarnings("error")
 
 IMAGE_DIR = '/media/hsyoon/hard2/SDS/dataset_raw/image/'
 MOTION_DIR = '/media/hsyoon/hard2/SDS/dataset_raw/motion/'
@@ -34,33 +42,45 @@ print(image_data_name_list[0])
 print(motion_data_name_list[0])
 
 if len(image_data_name_list) != len(motion_data_name_list):
+    print("state length", len(image_data_name_list))
+    print("motion length", len(motion_data_name_list))
     print("DATASET ERROR!")
 
 for index in range(len(image_data_name_list)):
     if len(image_data_name_list) - index > 2:
-        numpy_to_save = list()
-        motion = None
-        for seq in range(IMAGE_SEQUENCE):
-            im = Image.open(IMAGE_DIR + image_data_name_list[index + seq])
-            im = im.resize((IMAGE_SIZE, IMAGE_SIZE))
+        try:
+            numpy_to_save = list()
+            motion = None
+            for seq in range(IMAGE_SEQUENCE):
+                im = Image.open(IMAGE_DIR + image_data_name_list[index + seq])
+                im = im.resize((IMAGE_SIZE, IMAGE_SIZE))
 
-            numpy_im_tmp = numpy.asarray(im)
-            numpy_im_tmp = numpy_im_tmp[:,:,:3]
-            list_tmp = list(numpy_im_tmp)
-            numpy_to_save.append(list_tmp)
+                numpy_im_tmp = numpy.asarray(im)
+                numpy_im_tmp = numpy_im_tmp[:,:,:3]
+                list_tmp = list(numpy_im_tmp)
+                numpy_to_save.append(list_tmp)
 
-        motion = np.loadtxt(MOTION_DIR + motion_data_name_list[index + IMAGE_SEQUENCE - 1])
-        numpy_to_save = np.array(numpy_to_save)
+            motion = np.loadtxt(MOTION_DIR + motion_data_name_list[index + IMAGE_SEQUENCE - 1])
+            numpy_to_save = np.array(numpy_to_save)
 
-        now = datetime.now()
-        now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
-        now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
+            now = datetime.now()
+            now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
+            now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
 
-        data = dict()
-        data['state'] = numpy_to_save.tolist()
-        data['motion'] = motion.tolist()
+            data = dict()
+            data['state'] = numpy_to_save.tolist()
+            data['motion'] = motion.tolist()
 
-        print("state shape!", numpy_to_save.shape)
-        if numpy_to_save.shape[0] == 3:
-            with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(index) + ".json", 'w', encoding='utf-8') as make_file:
-                json.dump(data, make_file, indent="\t")
+            print("state shape!", numpy_to_save.shape)
+            if numpy_to_save.shape[0] == 3:
+                with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(index) + ".json", 'w', encoding='utf-8') as make_file:
+                    json.dump(data, make_file, indent="\t")
+
+        except struct.error as se:
+            print("STRUCT ERROR", se)
+            continue
+        except OSError as oe:
+            print("OSError", oe)
+            continue
+
+print("MANUAL DATASET COMPOSER COMPLETE!")

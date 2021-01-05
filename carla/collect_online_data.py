@@ -163,6 +163,15 @@ def get_current_time():
 
     return now_all
 
+def get_date():
+    now = tmp_datetime.now()
+    now_date = str(now.year)[-2:] + str(now.month).zfill(2) + str(now.day).zfill(2)
+    return now_date
+
+def get_time():
+    now = tmp_datetime.now()
+    now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
+    return now_time
 # ==============================================================================
 # -- World ---------------------------------------------------------------------
 # ==============================================================================
@@ -458,6 +467,11 @@ class KeyboardControl(object):
             world.current_action = self._control
             world.player.apply_control(self._control)
 
+        elif self._autopilot_enabled:
+            self._control.steer = world.player.get_control().steer
+            self._control.throttle = world.player.get_control().throttle
+            self._control.brake = world.player.get_control().brake
+
     def get_motion(self):
         return self._control
 
@@ -706,11 +720,9 @@ class HelpText(object):
         if self._render:
             display.blit(self.surface, self.pos)
 
-
 # ==============================================================================
 # -- CollisionSensor -----------------------------------------------------------
 # ==============================================================================
-
 
 class CollisionSensor(object):
     def __init__(self, parent_actor, hud):
@@ -908,7 +920,6 @@ class RadarSensor(object):
 # -- CameraManager -------------------------------------------------------------
 # ==============================================================================
 
-
 class CameraManager(object):
     def __init__(self, parent_actor, hud, gamma_correction):
         self.sensor = None
@@ -923,7 +934,7 @@ class CameraManager(object):
         self.motion_sequence = list()
         self.motion_sequence_numpy = None
 
-        self.data_filter = DataFilter()
+        self.data_filter = DataFilter(64, 3, 3)
 
         self.recording = True
         bound_y = 0.5 + self._parent.bounding_box.extent.y
@@ -955,8 +966,6 @@ class CameraManager(object):
             if item[0].startswith('sensor.camera'):
                 bp.set_attribute('image_size_x', str(hud.dim[0]))
                 bp.set_attribute('image_size_y', str(hud.dim[1]))
-                # bp.set_attribute('image_size_x', str(64))
-                # bp.set_attribute('image_size_y', str(64))
                 if bp.has_attribute('gamma'):
                     bp.set_attribute('gamma', str(gamma_correction))
                 for attr_name, attr_value in item[3].items():
@@ -965,6 +974,9 @@ class CameraManager(object):
                 bp.set_attribute('range', '50')
             item.append(bp)
         self.index = None
+
+    def get_allday_mse_loss(self):
+        return self.data_filter.get_mse_loss()
 
     def toggle_camera(self):
         self.transform_index = (self.transform_index + 1) % len(self._camera_transforms)
@@ -1063,7 +1075,7 @@ class CameraManager(object):
                     self.state_sequence_numpy = np.array(self.state_sequence)
                     self.motion_sequence_numpy = np.array(self.motion_sequence)
 
-                    if self.data_filter.is_novel(self.state_sequence_numpy, self.motion_sequence_numpy) is True:
+                    if self.data_filter.is_novel(self.state_sequence_numpy, current_action) is True:
 
                         print("Current online data is novel!")
 
@@ -1079,6 +1091,8 @@ class CameraManager(object):
                     else:
                         print("Current online data is tedious!")
                         # conver numpy to json then save it
+
+                    # OR, WE CAN JUST SAVE EVERY SINGLE STATE IMAGE AND MOTION, THEN POST-PROCESS IT FOR ONLINE DATA"SET".
 
                     # np.savetxt('/media/hsyoon/hard2/SDS/dataset_online/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
                     # image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
@@ -1102,11 +1116,11 @@ def game_loop(args):
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
 
-        display = pygame.display.set_mode((args.width, args.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
+        # display = pygame.display.set_mode((args.width, args.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
 
         hud = HUD(args.width, args.height)
         world = World(client.get_world(), hud, args)
-        # args.autopilot = True
+        args.autopilot = True
         controller = KeyboardControl(world, args.autopilot)
 
         start_time = get_current_time()
@@ -1119,12 +1133,18 @@ def game_loop(args):
                 return
             world.tick(clock)
             world.update_current_action(controller.get_motion())
-            world.render(display)
-            pygame.display.flip()
+            # world.render(display)
+            # pygame.display.flip()
 
             now_time = get_current_time()
 
     finally:
+
+        print("MSE error of today", world.camera_manager.get_allday_mse_loss())
+
+        losstxt = open('/media/hsyoon/hard2/SDS/loss/' + args.date + '_' + args.time + '_loss.txt', 'a')
+        losstxt.write(str(world.camera_manager.get_allday_mse_loss()) + '\n')
+        losstxt.close()
 
         if (world and world.recording_enabled):
             client.stop_recorder()
@@ -1132,6 +1152,7 @@ def game_loop(args):
         if world is not None:
             world.destroy()
 
+        print("ONLINE FINISHED!")
         pygame.quit()
 
 
@@ -1167,7 +1188,6 @@ def run():
         '--res',
         metavar='WIDTHxHEIGHT',
         default='1280x720',
-        # default='64x64',
         help='window resolution (default: 1280x720)')
     argparser.add_argument(
         '--filter',
@@ -1184,6 +1204,15 @@ def run():
         default=2.2,
         type=float,
         help='Gamma correction of the camera (default: 2.2)')
+    argparser.add_argument(
+        '--date',
+        default=0
+    )
+    argparser.add_argument(
+        '--time',
+        default=0
+    )
+
     args = argparser.parse_args()
 
     args.width, args.height = [int(x) for x in args.res.split('x')]

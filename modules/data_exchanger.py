@@ -30,7 +30,6 @@ class DataExchanger():
     def select_discard_data(self):
 
         # TODO: Define criteria of discarding data with probability function
-
         index = np.random.choice(len(self.dataset_name_list)-1, replace=False)
 
         discard_data_name = self.dataset_name_list[index]

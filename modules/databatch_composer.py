@@ -10,6 +10,7 @@ class DataBatchComposer():
         self.databatch_entropy = 0
 
     def get_databatch_list(self):
+
         # tmp_databatch = self.extract_batch()
         # tmp_entropy = self.compute_entropy(tmp_databatch)
         #

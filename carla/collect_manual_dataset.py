@@ -450,6 +450,11 @@ class KeyboardControl(object):
             # print(world.current_action)
             world.player.apply_control(self._control)
 
+        elif self._autopilot_enabled:
+            self._control.steer = world.player.get_control().steer
+            self._control.throttle = world.player.get_control().throttle
+            self._control.brake = world.player.get_control().brake
+
     def get_motion(self):
         return self._control
 
@@ -1023,7 +1028,7 @@ class CameraManager(object):
             try:
                 print("Current Action", self.current_action)
                 current_action = np.array([self.current_action.throttle, self.current_action.steer, self.current_action.brake])
-                if int(image.frame) % 5 == 0:
+                if int(image.frame) % 5 == 0 and current_action is not None and image is not None:
                     np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
                     image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
             except AttributeError as AE:
