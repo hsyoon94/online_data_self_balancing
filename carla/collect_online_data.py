@@ -88,6 +88,7 @@ import random
 import re
 import weakref
 from PIL import Image
+from sys import getsizeof
 
 try:
     import pygame
@@ -927,6 +928,8 @@ class CameraManager(object):
         self._parent = parent_actor
         self.current_action = None
         self.hud = hud
+        self.total_online_data_count = 0
+        self.novel_online_data_count = 0
 
         self.state_sequence = list()
         self.state_sequence_numpy = None
@@ -978,6 +981,9 @@ class CameraManager(object):
     def get_allday_mse_loss(self):
         return self.data_filter.get_mse_loss()
 
+    def get_novel_data_ratio(self):
+        return self.novel_online_data_count / self.total_online_data_count
+
     def toggle_camera(self):
         self.transform_index = (self.transform_index + 1) % len(self._camera_transforms)
         self.set_sensor(self.index, notify=False, force_respawn=True)
@@ -1017,8 +1023,6 @@ class CameraManager(object):
     @staticmethod
     def _parse_image(weak_self, image):
         self = weak_self()
-        make_file = np.array([])
-        save_count = 0
 
         if not self:
             return
@@ -1075,9 +1079,12 @@ class CameraManager(object):
                     self.state_sequence_numpy = np.array(self.state_sequence)
                     self.motion_sequence_numpy = np.array(self.motion_sequence)
 
-                    if self.data_filter.is_novel(self.state_sequence_numpy, current_action) is True:
+                    self.total_online_data_count = self.total_online_data_count + 1
 
-                        print("Current online data is novel!")
+                    if self.data_filter.is_novel(self.state_sequence_numpy, current_action) is True:
+                        self.novel_online_data_count = self.novel_online_data_count + 1
+                        if self.total_online_data_count % 20 == 0:
+                            print("Current online data is novel!")
 
                         data = dict()
                         data['state'] = self.state_sequence_numpy.tolist()
@@ -1089,7 +1096,8 @@ class CameraManager(object):
                                 json.dump(data, make_file, indent="\t")
 
                     else:
-                        print("Current online data is tedious!")
+                        if self.total_online_data_count % 20 == 0:
+                            print("Current online data is tedious!")
                         # conver numpy to json then save it
 
                     # OR, WE CAN JUST SAVE EVERY SINGLE STATE IMAGE AND MOTION, THEN POST-PROCESS IT FOR ONLINE DATA"SET".
@@ -1111,7 +1119,7 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute = 0.1
+    running_time_minute = 5
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
@@ -1139,12 +1147,18 @@ def game_loop(args):
             now_time = get_current_time()
 
     finally:
+        mse_loss = world.camera_manager.get_allday_mse_loss()
+        novel_ratio = world.camera_manager.get_novel_data_ratio()
+        print("MSE error of today", mse_loss)
+        print("Novel data ratio of today", novel_ratio)
 
-        print("MSE error of today", world.camera_manager.get_allday_mse_loss())
-
-        losstxt = open('/media/hsyoon/hard2/SDS/loss/' + args.date + '_' + args.time + '_loss.txt', 'a')
-        losstxt.write(str(world.camera_manager.get_allday_mse_loss()) + '\n')
+        losstxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_loss.txt', 'a')
+        losstxt.write(str(mse_loss) + '\n')
         losstxt.close()
+
+        noveltxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_novel_ratio.txt', 'a')
+        noveltxt.write(str(novel_ratio) + '\n')
+        noveltxt.close()
 
         if (world and world.recording_enabled):
             client.stop_recorder()

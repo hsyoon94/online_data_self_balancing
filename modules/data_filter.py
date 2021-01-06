@@ -9,7 +9,9 @@ import math
 torch.set_num_threads(2)
 
 is_cuda = torch.cuda.is_available()
-device = torch.device('cuda' if is_cuda else 'cpu')
+
+# device = torch.device('cuda' if is_cuda else 'cpu')
+device = 'cpu'
 
 from .bmnet import MNet
 from os import listdir
@@ -48,21 +50,30 @@ class DataFilter():
 
     def is_novel(self, online_state, gt_motion):
 
-        online_state_tensor = torch.tensor(online_state).to(device)
-        online_state_tensor = torch.reshape(online_state_tensor, (online_state_tensor.shape[0], online_state_tensor.shape[3], online_state_tensor.shape[1], online_state_tensor.shape[2])).float()
+        with torch.no_grad():
+            online_state_tensor = torch.tensor(online_state).to(device)
+            online_state_tensor = torch.reshape(online_state_tensor, (online_state_tensor.shape[0], online_state_tensor.shape[3], online_state_tensor.shape[1], online_state_tensor.shape[2])).float()
 
-        try:
-            self.pm = self.mnet_filter(online_state_tensor).cpu().detach().numpy().squeeze()
-            mse_error = mse_loss(gt_motion, self.pm)
-            self.accumulated_mse_error = self.accumulated_mse_error + mse_error
+            try:
+                pm = self.mnet_filter(online_state_tensor)
+                pm = pm.cpu().detach().numpy().squeeze()
+                self.pm = pm
 
-            if mse_error > self.pm_mse_threshold:
-                return True
-            else:
+                mse_error = mse_loss(gt_motion, self.pm)
+                self.accumulated_mse_error = self.accumulated_mse_error + mse_error
+
+                random_num = np.random.uniform(0, 1, 1)
+                # if mse_error > self.pm_mse_threshold:
+                if random_num > 0.5:
+                    return True
+                else:
+                    return False
+
+            except RuntimeError:
                 return False
 
-        except RuntimeError:
-            return False
+
+
 
     def get_mse_loss(self):
         return self.accumulated_mse_error

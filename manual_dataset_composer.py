@@ -83,4 +83,4 @@ for index in range(len(image_data_name_list)):
             print("OSError", oe)
             continue
 
-print("MANUAL DATASET COMPOSER COMPLETE!")
+print("MANUAL DATASET COMPOSER COMPLETE WITH", len(image_data_name_list), "MORE DATA!")

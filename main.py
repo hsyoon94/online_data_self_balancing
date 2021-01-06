@@ -28,7 +28,7 @@ STATE_SIZE = 64
 STATE_DIM = 3
 MOTION_SIZE = 3
 
-TRAINING_ITERATION = 100
+TRAINING_ITERATION = 500
 DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset/'
 ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
 REMOVAL_DATA_DIR = '/media/hsyoon/hard2/SDS/data_removal/'
