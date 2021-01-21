@@ -1119,7 +1119,7 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute =
+    running_time_minute = 5
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
