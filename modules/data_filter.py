@@ -91,7 +91,7 @@ class DataFilter():
                     pmt = self.pmt_net(online_state_tensor)
                     pmb = self.pmb_net(online_state_tensor)
 
-                    # 0.7 under or not the maximum, then it is indicated to be novel!
+                    # 0.7 under or not the maximum, then it is indicated to be novel! vs gt_motion!!
 
                 mse_error = mse_loss(gt_motion, self.pm)
 

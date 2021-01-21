@@ -28,8 +28,8 @@ MOTION_SIZE = 3
 
 TRAINING_ITERATION = 2000
 DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset/'
-MODEL_SAVE_DIR = './trained_models/'
-MODEL0_FILE = './trained_models/day0.pt'
+MODEL_SAVE_DIR = './trained_models/mnet/'
+MODEL0_FILE = './trained_models/mnet/day0.pt'
 
 def get_date():
     now = datetime.now()
@@ -79,10 +79,10 @@ def train_model(day, iteration, model, dataset_dir, data_list, model_save_dir, c
         print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
     print("[FAKE] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
-
 def main():
 
     # data_exchanger = DataExchanger()
+    # TODO: Also initially train pm3nets
     model = MNet(STATE_SIZE, STATE_DIM, MOTION_SIZE, device)
     start_date = get_date()
     start_time = get_time()
@@ -98,8 +98,6 @@ def main():
 
     train_model(day, TRAINING_ITERATION, model, DATASET_DIR, data_list, MODEL_SAVE_DIR, criterion, optimizer, device)
     print("TRAINING ENDS!")
-
-
 
 if __name__ == '__main__':
     main()
