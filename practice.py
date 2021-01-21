@@ -26,3 +26,5 @@ with open(json2) as tmp_json2:
 
     print(np.array(state).shape)
     print(np.array(motion).shape)
+
+

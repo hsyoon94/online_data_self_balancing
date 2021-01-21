@@ -5,6 +5,7 @@ import torch
 # import probability
 import torch.nn as nn
 import math
+from numpy import linalg as LA
 
 torch.set_num_threads(2)
 
@@ -31,15 +32,13 @@ def mse_loss(arr1, arr2):
 class DataFilter():
     def __init__(self, mnet_state_size, mnet_state_dim, mnet_motion_size):
         self.pm = None
-        self.pb = None
         self.po = None
 
         self.pm_threshold = 0.5
-        self.pb_threshold = 0.5
         self.po_threshold = 0.5
-        self.pm_mse_threshold = 0.0001
+        self.pm_mse_threshold = 0.33
 
-        self.pmbo_threshold = 0.7
+        self.pmo_threshold = 0.1
         self.MSELOSS = nn.MSELoss()
         self.mnet_filter = MNet(mnet_state_size, mnet_state_dim, mnet_motion_size, device)
         # FOR THE LATEST MNET
@@ -47,6 +46,8 @@ class DataFilter():
         mnet_list.sort()
         self.mnet_filter.load_state_dict(torch.load(MNET_MODEL_DIR + mnet_list[-1]))
         self.accumulated_mse_error = 0
+        self.motion_sequence = list()
+        self.ensemble_frequency = 3
 
     def is_novel(self, online_state, gt_motion):
 
@@ -55,25 +56,33 @@ class DataFilter():
             online_state_tensor = torch.reshape(online_state_tensor, (online_state_tensor.shape[0], online_state_tensor.shape[3], online_state_tensor.shape[1], online_state_tensor.shape[2])).float()
 
             try:
-                pm = self.mnet_filter(online_state_tensor)
-                pm = pm.cpu().detach().numpy().squeeze()
-                self.pm = pm
+                for iter in range(self.ensemble_frequency):
+                    with torch.no_grad():
+                        pm = self.mnet_filter(online_state_tensor)
+                        pm = pm.cpu().detach().numpy().squeeze()
+
+                    self.motion_sequence.append(pm)
+
+                motion_sequence_numpy = np.array(self.motion_sequence)
+                motion_sequence_mean = np.mean(motion_sequence_numpy, axis=0)
+                motion_sequence_std = np.std(motion_sequence_numpy, axis=0)
+
+                self.pm = motion_sequence_mean
 
                 mse_error = mse_loss(gt_motion, self.pm)
-                self.accumulated_mse_error = self.accumulated_mse_error + mse_error
 
-                random_num = np.random.uniform(0, 1, 1)
-                # if mse_error > self.pm_mse_threshold:
-                if random_num > 0.5:
+                self.accumulated_mse_error = self.accumulated_mse_error + mse_error
+                self.motion_sequence = list()
+
+                total_std = LA.norm(motion_sequence_std)
+
+                if total_std > self.pmo_threshold:
                     return True
                 else:
                     return False
 
             except RuntimeError:
                 return False
-
-
-
 
     def get_mse_loss(self):
         return self.accumulated_mse_error

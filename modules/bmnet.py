@@ -27,11 +27,13 @@ class MNet(nn.Module):
         self.motion_shape = motion_shape
         self.device = device
         self.cnn_mid_channel = 16
+        self.dropout= nn.Dropout(p=0.1)
 
         self.F1_DIM = 128
         self.F2_DIM = 64
         self.ReLU = nn.ReLU().to(self.device)
         self.Sigmoid = nn.Sigmoid().to(self.device)
+        self.Tanh = nn.Tanh().to(self.device)
         self.CNN1 = nn.Conv2d(self.state_channel, self.cnn_mid_channel, 1, stride=3).to(self.device)
         self.CNN2 = nn.Conv2d(self.cnn_mid_channel, 3, 1, stride=3).to(self.device)
         self.MaxPool1 = nn.MaxPool2d(3, 1).to(self.device)
@@ -43,38 +45,26 @@ class MNet(nn.Module):
     def forward(self, state):
 
         motion = self.CNN1(state)
+        motion = self.dropout(motion)
         motion = self.CNN2(motion)
+        motion = self.dropout(motion)
         motion = self.MaxPool1(motion)
 
         self.F1_DIM = motion.shape[0] * motion.shape[1] * motion.shape[2] * motion.shape[3]
         motion = motion.view(-1, self.F1_DIM)  # reshape Variable
 
         motion = self.F1(motion)
+        motion = self.dropout(motion)
         motion = self.ReLU(motion)
 
         motion = self.F2(motion)
+        motion = self.dropout(motion)
         motion = self.ReLU(motion)
 
         motion = self.F3(motion)
-        motion = self.Sigmoid(motion)
+
+        motion[0][0] = self.Sigmoid(motion[0][0])
+        motion[0][1] = self.Tanh(motion[0][1])
+        motion[0][2] = self.Sigmoid(motion[0][2])
 
         return motion
-
-
-class BMNet(nn.Module):
-    def __init__(self, state_shape, behavior_shape, motion_shape):
-
-        # TODO: Design BMNet specifically
-
-        self.state_shape = state_shape
-        self.behavior_shape = behavior_shape
-        self.motion_shape = motion_shape
-        # TODO: Separate bnet and mnet
-        self.model = nn.Sequential()
-
-    def forward(self, state):
-
-        # TODO: Seperately implement forward function of bnet and mnet
-        behavior, motion = self.model(state)
-
-        return behavior, motion

@@ -1,1 +1,1 @@
-BMNET_DIR = './trained_bmnet/'
+BMNET_DIR = './trained_models/'

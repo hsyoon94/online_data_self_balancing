@@ -1,6 +1,6 @@
 # train and update LPNet
 
-from modules.bmnet import BMNet, MNet
+from modules.bmnet import MNet
 from modules.data_filter import DataFilter
 from modules.databatch_composer import DataBatchComposer
 from modules.data_exchanger import DataExchanger
@@ -108,7 +108,6 @@ def main():
         command = 'python /home/hsyoon/job/SDS/carla/collect_online_data.py --date ' + start_date + ' --time ' + start_time
         print("COMMAND:", command)
         os.system(command)
-        # os.system('/home/hsyoon/job/SDS/carla/collect_online_data.py --date', start_date, '--time', start_time)
         print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "END COLLECTING ONLINE DATA AND START UPDATING DATASET WITH APPENDING NOVEL ONLINE DATA...", sep="")
 
         # Update dataset then discard wrong data
