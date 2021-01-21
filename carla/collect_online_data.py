@@ -982,7 +982,7 @@ class CameraManager(object):
         return self.data_filter.get_mse_loss()
 
     def get_novel_data_ratio(self):
-        return self.novel_online_data_count / self.total_online_data_count
+        return [self.total_online_data_count, self.novel_online_data_count, self.novel_online_data_count / self.total_online_data_count]
 
     def toggle_camera(self):
         self.transform_index = (self.transform_index + 1) % len(self._camera_transforms)
@@ -1119,7 +1119,7 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute = 5
+    running_time_minute =
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
@@ -1150,7 +1150,7 @@ def game_loop(args):
         mse_loss = world.camera_manager.get_allday_mse_loss()
         novel_ratio = world.camera_manager.get_novel_data_ratio()
         print("MSE error of today", mse_loss)
-        print("Novel data ratio of today", novel_ratio)
+        print("Novel data ratio of today", novel_ratio[1] , "/", novel_ratio[0], "(", novel_ratio[2], ")" )
 
         losstxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_loss.txt', 'a')
         losstxt.write(str(mse_loss) + '\n')
