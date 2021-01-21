@@ -30,6 +30,7 @@ class DataExchanger():
     def select_discard_data(self):
 
         # TODO: Define criteria of discarding data with probability function
+        # TODO: Sort the data with the probability in "daytime" to efficiently use time. (Night time is for updating MNet)
         index = np.random.choice(len(self.dataset_name_list)-1, replace=False)
 
         discard_data_name = self.dataset_name_list[index]

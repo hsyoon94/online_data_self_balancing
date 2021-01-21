@@ -1,6 +1,7 @@
 # train and update LPNet
 
 from modules.bmnet import MNet
+from modules.probability import motion_probability
 from modules.data_filter import DataFilter
 from modules.databatch_composer import DataBatchComposer
 from modules.data_exchanger import DataExchanger
@@ -28,12 +29,20 @@ STATE_SIZE = 64
 STATE_DIM = 3
 MOTION_SIZE = 3
 
-TRAINING_ITERATION = 500
+TRAINING_ITERATION = 100
 DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset/'
 ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
 REMOVAL_DATA_DIR = '/media/hsyoon/hard2/SDS/data_removal/'
-MODEL_SAVE_DIR = './trained_models/'
-MODEL0_FILE = './trained_models/day0.pt'
+
+MNET_MODEL_SAVE_DIR = './trained_models/mnet/'
+PMT_MODEL_SAVE_DIR = './trained_models/pmt/'
+PMS_MODEL_SAVE_DIR = './trained_models/pms/'
+PMB_MODEL_SAVE_DIR = './trained_models/pmb/'
+
+MNET_MODEL0_FILE = './trained_models/mnet/day0.pt'
+PMT_MODEL0_FILE = './trained_models/pmt/day0.pt'
+PMS_MODEL0_FILE = './trained_models/pms/day0.pt'
+PMB_MODEL0_FILE = './trained_models/pmb/day0.pt'
 
 def get_date():
     now = datetime.now()
@@ -45,7 +54,7 @@ def get_time():
     now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
     return now_time
 
-def train_model(day, iteration, model, dataset_dir, data_list, model_save_dir, criterion, optimizer, device):
+def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device):
 
     databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=0.0, databatch_size=1)
 
@@ -64,15 +73,40 @@ def train_model(day, iteration, model, dataset_dir, data_list, model_save_dir, c
                 print("JSON IOerror with ", data_list[batch_index[i]])
                 continue
 
+            # Network(MNet, PMT, PMS, PMB) update
             if json_data['state'] is not None and len(json_data['motion']) is not 0 and len(json_data['state']) is 3:
                 state_tensor = torch.tensor(json_data['state']).to(device)
                 state_tensor = torch.reshape(state_tensor, (state_tensor.shape[0], state_tensor.shape[3], state_tensor.shape[1], state_tensor.shape[2])).float()
 
-                optimizer.zero_grad()
+                optimizer_mnet.zero_grad()
                 model_output = model.forward(state_tensor).squeeze()
-                loss = criterion(model_output, torch.tensor(json_data['motion']).to(device))
+                loss = criterion_mse(model_output, torch.tensor(json_data['motion']).to(device))
                 loss.backward()
-                optimizer.step()
+                optimizer_mnet.step()
+
+                # PMNet update
+                # TODO : compose gt output correctly
+                pmt_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
+                pms_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
+                pmb_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
+
+                optimizer_pmt.zero_grad()
+                pmtnet_output = pmtnet.forward(state_tensor).squeeze()
+                loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                loss_pmt.backward()
+                optimizer_pmt.step()
+
+                optimizer_pms.zero_grad()
+                pmsnet_output = pmsnet.forward(state_tensor).squeeze()
+                loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                loss_pms.backward()
+                optimizer_pms.step()
+
+                optimizer_pmb.zero_grad()
+                pmbnet_output = pmtnet.forward(state_tensor).squeeze()
+                loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                loss_pmb.backward()
+                optimizer_pmb.step()
 
         if MODEL_SAVE is True and iter % 100 == 0:
             # torch.save(model.state_dict(), model_save_dir + get_date() + '_' + get_time() + '_iter' + str(iter) + '.pt')
@@ -80,22 +114,37 @@ def train_model(day, iteration, model, dataset_dir, data_list, model_save_dir, c
 
     if MODEL_SAVE is True:
         torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
+        torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
+        torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
+        torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
         print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
-    print("[FAKE] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
+
+    else:
+        print("[FAKE: NOT SAVED] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
 
 def main():
 
     # data_exchanger = DataExchanger()
     model = MNet(STATE_SIZE, STATE_DIM, MOTION_SIZE, device)
+
+    pmt_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
+    pms_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
+    pmb_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
+
     start_date = get_date()
     start_time = get_time()
 
     # torch.save(model.state_dict(), MODEL_SAVE_DIR + 'day0.pt')
     # model.load_state_dict(torch.load(MODEL0_FILE))
 
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
-    criterion = nn.MSELoss()
+    optimizer_mnet = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer_pmt = optim.Adam(pmt_prob_model.parameters(), lr=0.0001)
+    optimizer_pms = optim.Adam(pms_prob_model.parameters(), lr=0.0001)
+    optimizer_pmb = optim.Adam(pmb_prob_model.parameters(), lr=0.0001)
+
+    criterion_mse = nn.MSELoss()
+    criterion_bce = nn.BCELoss()
     forever = True
     day = 0
 
@@ -137,13 +186,15 @@ def main():
         # data_list.sort()
 
         # Train dataset
-        train_model(day, TRAINING_ITERATION, model, DATASET_DIR, data_list, MODEL_SAVE_DIR, criterion, optimizer, device)
+        train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model,
+                    DATASET_DIR, data_list, MNET_MODEL_SAVE_DIR, PMT_MODEL_SAVE_DIR, PMS_MODEL_SAVE_DIR, PMB_MODEL_SAVE_DIR,
+                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device)
 
         # Go to next day and update policy network parameter.
         day = day + 1
 
         if MODEL_SAVE is True:
-            model.load_state_dict(torch.load(MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+            model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
 
     return 0
 
