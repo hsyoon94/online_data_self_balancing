@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class DataBatchComposer():
     def __init__(self, dataset_dir, data_list, entropy_threshold, databatch_size = 1):
@@ -8,6 +9,10 @@ class DataBatchComposer():
         self.databatch_list = None
         self.databatch_size = databatch_size
         self.databatch_entropy = 0
+        self.mt_net = None
+        self.ms_net = None
+        self.mb_net = None
+        self.po = None
 
     def get_databatch_list(self):
 
@@ -26,15 +31,20 @@ class DataBatchComposer():
         return self.databatch_list
 
     def compute_entropy(self, databatch):
-        # TODO: Calculate entropy more specifically
         entropy = 0
-
         for i in range(len(databatch)):
-            entropy = 3
+            entropy = entropy + self.prob(databatch[i]) * math.log(self.prob(databatch[i]))
 
+        entropy = -1 * entropy
         return entropy
 
     def extract_batch(self):
         # TODO: Fix databatch size and efficiently pick databatch
         databatch = self.dataset[0:10]
         return databatch
+
+
+    def prob(self, data):
+        prob = self.mt_net(data) * self.ms_net(data) * self.mb_net(data) * self.po(data)
+
+        return prob

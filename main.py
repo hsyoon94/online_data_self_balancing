@@ -29,6 +29,16 @@ STATE_SIZE = 64
 STATE_DIM = 3
 MOTION_SIZE = 3
 
+THROTTLE_DISCR_DIM = 2
+throttle_discr_th = 0.1
+
+STEER_DISCR_DIM = 3
+steer_discr_th1 = -0.2
+steer_discr_th2 = 0.2
+
+BRAKE_DISCR_DIM = 2
+brake_discr_th = 0.1
+
 TRAINING_ITERATION = 100
 DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset/'
 ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
@@ -85,10 +95,22 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 optimizer_mnet.step()
 
                 # PMNet update
-                # TODO : compose gt output correctly
-                pmt_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
-                pms_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
-                pmb_output_gt = torch.tensor([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]).cuda().float()
+                if json_data['motion'][0] <= throttle_discr_th:
+                    pmt_output_gt = torch.tensor([1, 0]).cuda().float()
+                else:
+                    pmt_output_gt = torch.tensor([0, 1]).cuda().float()
+
+                if json_data['motion'][1] <= steer_discr_th1:
+                    pms_output_gt = torch.tensor([1, 0, 0]).cuda().float()
+                elif steer_discr_th1 <= json_data['motion'][0] <= steer_discr_th2:
+                    pms_output_gt = torch.tensor([0, 1, 0]).cuda().float()
+                else:
+                    pms_output_gt = torch.tensor([0, 0, 1]).cuda().float()
+
+                if json_data['motion'][2] <= brake_discr_th:
+                    pmb_output_gt = torch.tensor([1, 0]).cuda().float()
+                else:
+                    pmb_output_gt = torch.tensor([0, 1]).cuda().float()
 
                 optimizer_pmt.zero_grad()
                 pmtnet_output = pmtnet.forward(state_tensor).squeeze()
@@ -128,9 +150,9 @@ def main():
     # data_exchanger = DataExchanger()
     model = MNet(STATE_SIZE, STATE_DIM, MOTION_SIZE, device)
 
-    pmt_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
-    pms_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
-    pmb_prob_model = motion_probability(STATE_SIZE, STATE_DIM, 10, device)
+    pmt_prob_model = motion_probability(STATE_SIZE, STATE_DIM, THROTTLE_DISCR_DIM, device)
+    pms_prob_model = motion_probability(STATE_SIZE, STATE_DIM, STEER_DISCR_DIM, device)
+    pmb_prob_model = motion_probability(STATE_SIZE, STATE_DIM, BRAKE_DISCR_DIM, device)
 
     start_date = get_date()
     start_time = get_time()

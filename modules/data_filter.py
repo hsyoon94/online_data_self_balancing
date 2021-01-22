@@ -25,6 +25,17 @@ PMT_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pmt/"
 PMS_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pms/"
 PMB_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pmb/"
 
+
+THROTTLE_DISCR_DIM = 2
+throttle_discr_th = 0.1
+
+STEER_DISCR_DIM = 3
+steer_discr_th1 = -0.2
+steer_discr_th2 = 0.2
+
+BRAKE_DISCR_DIM = 2
+brake_discr_th = 0.1
+
 def mse_loss(arr1, arr2):
     error = 0
     for i in range(arr1.shape[0]):
@@ -49,9 +60,9 @@ class DataFilter():
         self.mnet_filter = MNet(mnet_state_size, mnet_state_dim, mnet_motion_size, device)
 
         # PM_NET for
-        self.pms_net = PM_NET(mnet_state_size, mnet_state_dim, 10, device)
-        self.pmt_net = PM_NET(mnet_state_size, mnet_state_dim, 10, device)
-        self.pmb_net = PM_NET(mnet_state_size, mnet_state_dim, 10, device)
+        self.pmt_net = PM_NET(mnet_state_size, mnet_state_dim, THROTTLE_DISCR_DIM, device)
+        self.pms_net = PM_NET(mnet_state_size, mnet_state_dim, STEER_DISCR_DIM, device)
+        self.pmb_net = PM_NET(mnet_state_size, mnet_state_dim, BRAKE_DISCR_DIM, device)
 
         # FOR THE LATEST MNET
         mnet_list = [f for f in listdir(MNET_MODEL_DIR) if isfile(join(MNET_MODEL_DIR, f))]
@@ -65,9 +76,9 @@ class DataFilter():
         self.accumulated_mse_error = 0
         self.motion_sequence = list()
         self.ensemble_frequency = 3
+        self.motion_std = None
 
     def is_novel(self, online_state, gt_motion):
-
         with torch.no_grad():
             online_state_tensor = torch.tensor(online_state).to(device)
             online_state_tensor = torch.reshape(online_state_tensor, (online_state_tensor.shape[0], online_state_tensor.shape[3], online_state_tensor.shape[1], online_state_tensor.shape[2])).float()
@@ -78,7 +89,6 @@ class DataFilter():
                         pm = pm.cpu().detach().numpy().squeeze()
 
                     self.motion_sequence.append(pm)
-
 
                 motion_sequence_numpy = np.array(self.motion_sequence)
                 motion_sequence_mean = np.mean(motion_sequence_numpy, axis=0)
@@ -98,18 +108,22 @@ class DataFilter():
                 self.accumulated_mse_error = self.accumulated_mse_error + mse_error
                 self.motion_sequence = list()
 
-                total_std = LA.norm(motion_sequence_std)
+                self.motion_std = LA.norm(motion_sequence_std)
 
-                print("total_std", total_std)
+                # TODO : Add logging code for std(uncertainty) from dropout
+                print("total_std", self.motion_std)
 
-                if total_std > self.pmo_threshold:
+                if self.motion_std > self.pmo_threshold:
                     return False
                 else:
                     return False
 
             except RuntimeError as e:
-                print("what?", e)
+                print("Error", e)
                 return False
 
     def get_mse_loss(self):
         return self.accumulated_mse_error
+
+    def get_motion_std(self):
+        return self.motion_std
