@@ -52,7 +52,6 @@ class motion_probability(nn.Module):
 
         return motion
 
-
 # TODO : IMPLEMENT IT!
 class state_probability():
     def __init(self):

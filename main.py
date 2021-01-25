@@ -23,7 +23,7 @@ torch.set_num_threads(2)
 is_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if is_cuda else 'cpu')
 
-MODEL_SAVE = True
+MODEL_SAVE = False
 
 STATE_SIZE = 64
 STATE_DIM = 3
@@ -66,7 +66,7 @@ def get_time():
 
 def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device):
 
-    databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=0.0, databatch_size=1)
+    databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=1.0, databatch_size=1)
 
     for iter in range(iteration):
 
@@ -130,8 +130,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss_pmb.backward()
                 optimizer_pmb.step()
 
-        if MODEL_SAVE is True and iter % 100 == 0:
-            # torch.save(model.state_dict(), model_save_dir + get_date() + '_' + get_time() + '_iter' + str(iter) + '.pt')
+        if iter % 10 == 0:
             print("Iteration", iter, "for day", day)
 
     if MODEL_SAVE is True:

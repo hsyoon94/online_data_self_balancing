@@ -16,19 +16,18 @@ class DataBatchComposer():
 
     def get_databatch_list(self):
 
-        # tmp_databatch = self.extract_batch()
-        # tmp_entropy = self.compute_entropy(tmp_databatch)
-        #
-        # while tmp_entropy < self.entropy_threshold:
-        #     tmp_databatch = self.extract_batch()
-        #     tmp_entropy = self.compute_entropy(tmp_databatch)
-        #
-        # self.databatch = tmp_databatch
-        # self.databatch_entropy = tmp_entropy
+        tmp_databatch = self.extract_random_batch()
+        tmp_entropy = self.compute_entropy(tmp_databatch)
 
-        self.databatch_list = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 100), replace=True)
+        while tmp_entropy < self.entropy_threshold:
+            print("current databatch entropy", tmp_entropy)
+            tmp_databatch = self.extract_random_batch()
+            tmp_entropy = self.compute_entropy(tmp_databatch)
 
-        return self.databatch_list
+        self.databatch = tmp_databatch
+        self.databatch_entropy = tmp_entropy
+
+        return self.databatch
 
     def compute_entropy(self, databatch):
         entropy = 0
@@ -36,15 +35,16 @@ class DataBatchComposer():
             entropy = entropy + self.prob(databatch[i]) * math.log(self.prob(databatch[i]))
 
         entropy = -1 * entropy
+
+        entropy = 100
         return entropy
 
-    def extract_batch(self):
-        # TODO: Fix databatch size and efficiently pick databatch
-        databatch = self.dataset[0:10]
+    def extract_random_batch(self):
+        # Random sampling
+        databatch = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 100), replace=True)
         return databatch
 
-
     def prob(self, data):
-        prob = self.mt_net(data) * self.ms_net(data) * self.mb_net(data) * self.po(data)
-
+        # prob = self.mt_net(data) * self.ms_net(data) * self.mb_net(data) * self.po(data)
+        prob = 0.5
         return prob

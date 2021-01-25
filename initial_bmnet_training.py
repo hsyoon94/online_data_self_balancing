@@ -1,8 +1,7 @@
-# train and update LPNet
+# train and update MNet
 
 from modules.bmnet import MNet
 from modules.probability import motion_probability
-from modules.data_filter import DataFilter
 from modules.databatch_composer import DataBatchComposer
 from modules.data_exchanger import DataExchanger
 import carla
@@ -14,9 +13,6 @@ import torch.optim as optim
 import torch.nn as nn
 from os import listdir
 from os.path import isfile, join
-# import carla.collect_online_data as run_file
-import os
-import shutil
 
 torch.set_num_threads(2)
 
@@ -162,9 +158,6 @@ def main():
     start_date = get_date()
     start_time = get_time()
 
-    # torch.save(model.state_dict(), MODEL_SAVE_DIR + 'day0.pt')
-    # model.load_state_dict(torch.load(MODEL0_FILE))
-
     optimizer_mnet = optim.Adam(model.parameters(), lr=0.0001)
     optimizer_pmt = optim.Adam(pmt_prob_model.parameters(), lr=0.0001)
     optimizer_pms = optim.Adam(pms_prob_model.parameters(), lr=0.0001)
@@ -172,10 +165,8 @@ def main():
 
     criterion_mse = nn.MSELoss()
     criterion_bce = nn.BCELoss()
-    forever = True
-    day = 0
 
-    data_exchanger = DataExchanger(ONLINE_DATA_DIR, DATASET_DIR)
+    day = 0
 
     print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "INITIAL INCREMENTAL INTELLIGENCE SYSTEM OPERATING...", sep="")
 
@@ -186,7 +177,6 @@ def main():
     train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model,
                     DATASET_DIR, data_list, MNET_MODEL_SAVE_DIR, PMT_MODEL_SAVE_DIR, PMS_MODEL_SAVE_DIR, PMB_MODEL_SAVE_DIR,
                     criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device)
-    day = day + 1
 
     if MODEL_SAVE is True:
         model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
