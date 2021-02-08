@@ -10,7 +10,7 @@ def get_args():
     #########################
     parser.add_argument("--data_path", type=str, default="/media/hsyoon/hard2/SDS/dataset_image", help="path to dataset repository")
     parser.add_argument("--nmb_crops", type=int, default=[2], nargs="+", help="list of number of crops (example: [2, 6])")
-    parser.add_argument("--size_crops", type=int, default=[224], nargs="+", help="crops resolutions (example: [224, 96])")
+    parser.add_argument("--size_crops", type=int, default=[16], nargs="+", help="crops resolutions (example: [224, 96])")
     parser.add_argument("--min_scale_crops", type=float, default=[0.14], nargs="+", help="argument in RandomResizedCrop (example: [0.14, 0.05])")
     parser.add_argument("--max_scale_crops", type=float, default=[1], nargs="+", help="argument in RandomResizedCrop (example: [1., 0.14])")
 
@@ -22,15 +22,15 @@ def get_args():
     parser.add_argument("--epsilon", default=0.05, type=float, help="regularization parameter for Sinkhorn-Knopp algorithm")
     parser.add_argument("--sinkhorn_iterations", default=3, type=int, help="number of iterations in Sinkhorn-Knopp algorithm")
     parser.add_argument("--feat_dim", default=128, type=int, help="feature dimension")
-    parser.add_argument("--nmb_prototypes", default=3000, type=int, help="number of prototypes")
+    parser.add_argument("--nmb_prototypes", default=1000, type=int, help="number of prototypes")
     parser.add_argument("--queue_length", type=int, default=0, help="length of the queue (0 for no queue)")
     parser.add_argument("--epoch_queue_starts", type=int, default=15, help="from this epoch, we start using a queue")
 
     #########################
     #### optim parameters ###
     #########################
-    parser.add_argument("--epochs", default=100, type=int, help="number of total epochs to run")
-    parser.add_argument("--batch_size", default=64, type=int, help="batch size per gpu, i.e. how many unique instances per gpu")
+    parser.add_argument("--swav_epochs", default=1, type=int, help="number of total epochs to run")
+    parser.add_argument("--batch_size", default=1, type=int, help="batch size per gpu, i.e. how many unique instances per gpu")
     parser.add_argument("--base_lr", default=4.8, type=float, help="base learning rate")
     parser.add_argument("--final_lr", type=float, default=0, help="final learning rate")
     parser.add_argument("--freeze_prototypes_niters", default=313, type=int, help="freeze the prototypes during this many iterations from the start")
@@ -55,8 +55,11 @@ def get_args():
     parser.add_argument("--checkpoint_freq", type=int, default=25, help="Save the model periodically")
     parser.add_argument("--sync_bn", type=str, default="pytorch", help="synchronize bn")
     parser.add_argument("--syncbn_process_group_size", type=int, default=8, help=""" see https://github.com/NVIDIA/apex/blob/master/apex/parallel/__init__.py#L58-L67""")
-    parser.add_argument("--dump_path", type=str, default=".", help="experiment dump path for checkpoints and log")
+    parser.add_argument("--dump_path", type=str, default="./log/swav/", help="experiment dump path for checkpoints and log")
     parser.add_argument("--seed", type=int, default=31, help="seed")
+    parser.add_argument("--use_swav", default=False, help="want to use swap")
+    parser.add_argument("--use_pil_blur", default=False, help="want to use swap")
+
 
     args = parser.parse_args()
 

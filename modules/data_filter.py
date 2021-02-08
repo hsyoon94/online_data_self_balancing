@@ -73,6 +73,7 @@ class DataFilter():
         self.pms_net = PM_NET(mnet_state_size, mnet_state_dim, STEER_DISCR_DIM, device)
         self.pmb_net = PM_NET(mnet_state_size, mnet_state_dim, BRAKE_DISCR_DIM, device)
 
+
         # FOR THE LATEST MODELS
         mnet_list = [f for f in listdir(MNET_MODEL_DIR) if isfile(join(MNET_MODEL_DIR, f))]
         pmt_list = [ft for ft in listdir(PMT_MODEL_DIR) if isfile(join(PMT_MODEL_DIR, ft))]

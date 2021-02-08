@@ -46,7 +46,7 @@ from modules.swav.src.utils import (
     init_distributed_mode,
 )
 
-from .arguments import get_args
+from arguments import get_args
 from modules.swav.src.multicropdataset import MultiCropDataset
 import modules.swav.src.resnet50 as resnet_models
 
@@ -181,10 +181,6 @@ def train_swav(train_loader, model, optimizer, epoch, lr_schedule, queue):
                     queue[i, :bs] = embedding[crop_id * bs: (crop_id + 1) * bs]
                 # get assignments
                 q = out / args.epsilon
-                if args.improve_numerical_stability:
-                    M = torch.max(q)
-                    dist.all_reduce(M, op=dist.ReduceOp.MAX)
-                    q -= M
                 q = torch.exp(q).t()
                 q = distributed_sinkhorn(q, args.sinkhorn_iterations)[-bs:]
 
@@ -229,10 +225,10 @@ def train_swav(train_loader, model, optimizer, epoch, lr_schedule, queue):
             )
     return (epoch, losses.avg), queue
 
-def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, ponet,
+def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
                 dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir,
-                criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, optimzer_po,
-                date, time, multi_crop_dataset, device):
+                criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb,
+                date, time, device):
 
     databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=1.0, databatch_size=1)
 
@@ -307,21 +303,6 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, ponet,
                 optimizer_pmb.step()
                 total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
 
-
-                # train_swav function
-                state_aug1, state_aug2 = multi_crop_dataset.augment_data(json_data['state'], MULTI_CROP_SIZE)
-                print("Aug1", state_aug1.shape)
-                print("Aug2", state_aug2.shape)
-
-                concat = torch.cat((state_aug1 ,state_aug2), 0)
-                print("concat shape", concat.shape)
-                z = ponet(concat)
-                print("z shape", z.shape)
-                scores = torch.mm(z, ponet.prototypes.weight.t())
-                print("scores shape", scores.shape)
-
-
-
         if iter % 10 == 0:
             print("Iteration", iter, "for day", day)
 
@@ -356,6 +337,59 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, ponet,
 def main():
     global args
     args = get_args()
+    # USE_SWAV = args.use_swav
+    USE_SWAV = True
+
+    if USE_SWAV:
+        """
+        START : MAIN CODE FOR SWAV
+        """
+        init_distributed_mode(args)
+        fix_random_seeds(args.seed)
+        logger, training_stats = initialize_exp(args, "epoch", "loss")
+
+        # build data
+        train_dataset_swav = MultiCropDataset(args.data_path, args.size_crops, args.nmb_crops, args.min_scale_crops,
+                                              args.max_scale_crops, pil_blur=args.use_pil_blur, )
+        sampler = torch.utils.data.distributed.DistributedSampler(train_dataset_swav)
+        train_loader_swav = torch.utils.data.DataLoader(train_dataset_swav, sampler=sampler, batch_size=args.batch_size,
+                                                        num_workers=args.workers, pin_memory=True, drop_last=True)
+
+        # build model
+        model_swav = resnet_models.__dict__[args.arch](normalize=True, hidden_mlp=args.hidden_mlp,
+                                                       output_dim=args.feat_dim, nmb_prototypes=args.nmb_prototypes, )
+        # synchronize batch norm layers
+        if args.sync_bn == "pytorch":
+            model_swav = nn.SyncBatchNorm.convert_sync_batchnorm(model_swav)
+
+        # copy model to GPU
+        model_swav = model_swav.cuda()
+
+        # build optimizer
+        optimizer_swav = torch.optim.SGD(model_swav.parameters(), lr=args.base_lr, momentum=0.9, weight_decay=args.wd, )
+
+        warmup_lr_schedule = np.linspace(args.start_warmup, args.base_lr, len(train_loader_swav) * args.warmup_epochs)
+        iters = np.arange(len(train_loader_swav) * (args.swav_epochs - args.warmup_epochs))
+        cosine_lr_schedule = np.array([args.final_lr + 0.5 * (args.base_lr - args.final_lr) * (1 + math.cos(math.pi * t / (len(train_loader_swav) * (args.swav_epochs - args.warmup_epochs)))) for t in iters])
+        lr_schedule = np.concatenate((warmup_lr_schedule, cosine_lr_schedule))
+        logger.info("Building optimizer done.")
+
+        # wrap model
+        model_swav = nn.parallel.DistributedDataParallel(model_swav, device_ids=[args.gpu_to_work_on],
+                                                         find_unused_parameters=True, )
+
+        # build the queue
+        # queue = None
+        # queue_path = os.path.join(args.dump_path, "queue" + str(args.rank) + ".pth")
+        # if os.path.isfile(queue_path):
+        #     queue = torch.load(queue_path)["queue"]
+        # # the queue needs to be divisible by the batch size
+        # args.queue_length -= args.queue_length % (args.batch_size * args.world_size)
+
+        cudnn.benchmark = True
+        """
+        END : MAIN CODE FOR SWAV
+        """
 
     model = MNet(STATE_SIZE, STATE_DIM, MOTION_SIZE, device)
 
@@ -363,36 +397,24 @@ def main():
     pms_prob_model = motion_probability(STATE_SIZE, STATE_DIM, STEER_DISCR_DIM, device)
     pmb_prob_model = motion_probability(STATE_SIZE, STATE_DIM, BRAKE_DISCR_DIM, device)
 
-    NMB_PROTOTYPE = 1000
-    po_prob_model = state_probability(STATE_SIZE, STATE_DIM, CLUSTER_DIM, NMB_PROTOTYPE, device)
-
-    print("Prototype", po_prob_model.prototypes.weight.t().shape)
-
-
     start_date = get_date()
     start_time = get_time()
 
-    # torch.save(model.state_dict(), MODEL_SAVE_DIR + 'day0.pt')
     model.load_state_dict(torch.load(MNET_MODEL0_FILE))
     pmt_prob_model.load_state_dict(torch.load(PMT_MODEL0_FILE))
     pms_prob_model.load_state_dict(torch.load(PMS_MODEL0_FILE))
     pmb_prob_model.load_state_dict(torch.load(PMB_MODEL0_FILE))
-    # po_prob_model.load_state_dict(torch.load(PO_MODEL0_FILE))
 
     optimizer_mnet = optim.Adam(model.parameters(), lr=0.0001)
     optimizer_pmt = optim.Adam(pmt_prob_model.parameters(), lr=0.0001)
     optimizer_pms = optim.Adam(pms_prob_model.parameters(), lr=0.0001)
     optimizer_pmb = optim.Adam(pmb_prob_model.parameters(), lr=0.0001)
-    optimizer_po = optim.Adam(po_prob_model.parameters(), lr=0.0001)
 
     criterion_mse = nn.MSELoss()
     criterion_bce = nn.BCELoss()
     forever = True
     day = 0
 
-    # TODO: We have to initialize Pm0, Pb0, Po0 with D0, MNet0, Pb0, Po0 at this point.
-
-    multi_crop_dataset = MultiCropDataset(device)
     data_exchanger = DataExchanger(ONLINE_DATA_DIR, ONLINE_DATA_IMAGE_DIR, DATASET_DIR, DATASET_IMAGE_DIR)
 
     print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "INCREMENTAL INTELLIGENCE SYSTEM OPERATING...", sep="")
@@ -413,12 +435,10 @@ def main():
             except ValueError:
                 print("ONLINE JSON value error with ", online_data_name_list[online_data_index])
                 os.remove(ONLINE_DATA_DIR + online_data_name_list[online_data_index])
-                # shutil.move(, REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
 
             except IOError:
                 print("ONLINE JSON IOerror with ", online_data_name_list[online_data_index])
                 os.remove(ONLINE_DATA_DIR + online_data_name_list[online_data_index])
-                # shutil.move(, REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
 
         # Update online data name list
         online_data_name_list = [f for f in listdir(ONLINE_DATA_DIR) if isfile(join(ONLINE_DATA_DIR, f))]
@@ -438,9 +458,63 @@ def main():
         data_list = [f for f in listdir(DATASET_DIR) if isfile(join(DATASET_DIR, f))]
 
         # Update MNet
-        train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model, po_prob_model,
+        train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model,
                     DATASET_DIR, data_list, MNET_MODEL_SAVE_DIR, PMT_MODEL_SAVE_DIR, PMS_MODEL_SAVE_DIR, PMB_MODEL_SAVE_DIR,
-                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, optimizer_po, start_date, start_time, multi_crop_dataset, device)
+                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, start_date, start_time, device)
+
+        """
+        START : TRAIN SWAV
+        """
+        if USE_SWAV:
+
+            train_dataset_swav = MultiCropDataset(args.data_path, args.size_crops, args.nmb_crops, args.min_scale_crops,args.max_scale_crops, pil_blur=args.use_pil_blur, )
+            sampler = torch.utils.data.distributed.DistributedSampler(train_dataset_swav)
+            train_loader_swav = torch.utils.data.DataLoader(train_dataset_swav, sampler=sampler, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, drop_last=True)
+
+            for epoch in range(args.swav_epochs):
+
+                # train the network for one epoch
+                logger.info("============ Starting epoch %i ... ============" % epoch)
+
+                # set sampler
+                train_loader_swav.sampler.set_epoch(epoch)
+
+                # optionally starts a queue
+                if args.queue_length > 0 and epoch >= args.epoch_queue_starts and queue is None:
+                    queue = torch.zeros(
+                        len(args.crops_for_assign),
+                        args.queue_length // args.world_size,
+                        args.feat_dim,
+                    ).cuda()
+
+                # train the network
+                scores, queue = train_swav(train_loader_swav, model_swav, optimizer_swav, epoch, lr_schedule, queue)
+                training_stats.update(scores)
+
+                # save checkpoints
+                if args.rank == 0:
+                    save_dict = {
+                        "epoch": epoch + 1,
+                        "state_dict": model_swav.state_dict(),
+                        "optimizer": optimizer_swav.state_dict(),
+                    }
+                    # if args.use_fp16:
+                    #     save_dict["amp"] = apex.amp.state_dict()
+                    torch.save(
+                        save_dict,
+                        os.path.join(args.dump_path, "checkpoint.pth.tar"),
+                    )
+                    if epoch % args.checkpoint_freq == 0 or epoch == args.swav_epochs - 1:
+                        shutil.copyfile(
+                            os.path.join(args.dump_path, "checkpoint.pth.tar"),
+                            os.path.join(args.dump_checkpoints, "ckp-" + str(epoch) + ".pth"),
+                        )
+                if queue is not None:
+                    torch.save({"queue": queue}, queue_path)
+
+        """
+        END : TRAIN SWAV
+        """
 
         # Go to next day and update policy network parameter.
         day = day + 1
@@ -450,6 +524,7 @@ def main():
             pms_prob_model.load_state_dict(torch.load(PMS_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
             pmt_prob_model.load_state_dict(torch.load(PMT_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
             pmb_prob_model.load_state_dict(torch.load(PMB_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+            model_swav.load_state_dict(torch.load(PO_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
 
     return 0
 

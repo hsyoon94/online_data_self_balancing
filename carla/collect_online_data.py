@@ -1063,6 +1063,7 @@ class CameraManager(object):
                     # push to state channel dim (default: 3) array
                     # push forward that array to p net then filter
 
+
                     tmp_bgr_image = to_bgr_array(image)
 
                     im = Image.fromarray(tmp_bgr_image)
@@ -1093,10 +1094,10 @@ class CameraManager(object):
                         data['motion'] = current_action.tolist()
 
                         if self.state_sequence_numpy.shape[0] == 3:
+                            image.save_to_disk(IMAGE_DATA_SAVE_DIR + now_date + '_' + now_time + "_" + str(image.frame))
+
                             with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(image.frame) + ".json", 'w', encoding='utf-8') as make_file:
                                 json.dump(data, make_file, indent="\t")
-
-                            image.save_to_disk(IMAGE_DATA_SAVE_DIR + now_date + '_' + now_time + "_" + str(image.frame))
 
                     else:
                         if self.total_online_data_count % 20 == 0:
@@ -1123,7 +1124,7 @@ def game_loop(args):
     pygame.font.init()
     world = None
     # default : 0.8
-    running_time_minute = 0.1
+    running_time_minute = 0.8
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)

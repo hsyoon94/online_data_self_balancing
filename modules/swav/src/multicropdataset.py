@@ -5,28 +5,103 @@
 # LICENSE file in the root directory of this source tree.
 #
 import random
+from logging import getLogger
+
+import cv2
+from PIL import ImageFilter
 import numpy as np
-import torch
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
 
-class MultiCropDataset():
-    def __init__(self, device):
-        self.state = None
-        self.device = device
+logger = getLogger()
 
-    def augment_data(self, state, crop_size):
-        # Randomly crop 2 augmented data
-        state = torch.tensor(state).to(self.device).float()
-        state = torch.reshape(state, (state.shape[0], state.shape[3], state.shape[1], state.shape[2]))
-        print("state dim", state.shape)
 
-        aug1_rndx = np.random.randint(state.shape[2] - crop_size, size=1)[0]
-        aug1_rndy = np.random.randint(state.shape[2] - crop_size, size=1)[0]
+class MultiCropDataset(datasets.ImageFolder):
+    def __init__(
+        self,
+        data_path,
+        size_crops,
+        nmb_crops,
+        min_scale_crops,
+        max_scale_crops,
+        size_dataset=-1,
+        return_index=False,
+        pil_blur=False,
+    ):
+        super(MultiCropDataset, self).__init__(data_path)
+        assert len(size_crops) == len(nmb_crops)
+        assert len(min_scale_crops) == len(nmb_crops)
+        assert len(max_scale_crops) == len(nmb_crops)
+        if size_dataset >= 0:
+            self.samples = self.samples[:size_dataset]
+        self.return_index = return_index
 
-        state_aug1 = state[:, :, aug1_rndx:aug1_rndx+crop_size, aug1_rndy:aug1_rndy+crop_size]
+        color_transform = [get_color_distortion(), RandomGaussianBlur()]
+        if pil_blur:
+            color_transform = [get_color_distortion(), PILRandomGaussianBlur()]
+        mean = [0.485, 0.456, 0.406]
+        std = [0.228, 0.224, 0.225]
+        trans = []
+        for i in range(len(size_crops)):
+            randomresizedcrop = transforms.RandomResizedCrop(
+                size_crops[i],
+                scale=(min_scale_crops[i], max_scale_crops[i]),
+            )
+            trans.extend([transforms.Compose([
+                randomresizedcrop,
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.Compose(color_transform),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=mean, std=std)])
+            ] * nmb_crops[i])
+        self.trans = trans
 
-        aug2_rndx = np.random.randint(state.shape[2] - crop_size, size=1)[0]
-        aug2_rndy = np.random.randint(state.shape[2] - crop_size, size=1)[0]
+    def __getitem__(self, index):
+        path, _ = self.samples[index]
+        image = self.loader(path)
+        multi_crops = list(map(lambda trans: trans(image), self.trans))
+        if self.return_index:
+            return index, multi_crops
+        return multi_crops
 
-        state_aug2 = state[:, :, aug2_rndx:aug2_rndx + crop_size, aug2_rndy:aug2_rndy + crop_size]
 
-        return state_aug1, state_aug2
+class RandomGaussianBlur(object):
+    def __call__(self, img):
+        do_it = np.random.rand() > 0.5
+        if not do_it:
+            return img
+        sigma = np.random.rand() * 1.9 + 0.1
+        return cv2.GaussianBlur(np.asarray(img), (23, 23), sigma)
+
+
+class PILRandomGaussianBlur(object):
+    """
+    Apply Gaussian Blur to the PIL image. Take the radius and probability of
+    application as the parameter.
+    This transform was used in SimCLR - https://arxiv.org/abs/2002.05709
+    """
+
+    def __init__(self, p=0.5, radius_min=0.1, radius_max=2.):
+        self.prob = p
+        self.radius_min = radius_min
+        self.radius_max = radius_max
+
+    def __call__(self, img):
+        do_it = np.random.rand() <= self.prob
+        if not do_it:
+            return img
+
+        return img.filter(
+            ImageFilter.GaussianBlur(
+                radius=random.uniform(self.radius_min, self.radius_max)
+            )
+        )
+
+
+def get_color_distortion(s=1.0):
+    # s is the strength of color distortion.
+    color_jitter = transforms.ColorJitter(0.8*s, 0.8*s, 0.8*s, 0.2*s)
+    rnd_color_jitter = transforms.RandomApply([color_jitter], p=0.8)
+    rnd_gray = transforms.RandomGrayscale(p=0.2)
+    color_distort = transforms.Compose([rnd_color_jitter, rnd_gray])
+    return color_distort
