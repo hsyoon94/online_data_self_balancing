@@ -19,7 +19,7 @@ torch.set_num_threads(2)
 is_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if is_cuda else 'cpu')
 
-MODEL_SAVE = True
+MODEL_SAVE = False
 
 STATE_SIZE = 64
 STATE_DIM = 3
@@ -60,9 +60,14 @@ def get_time():
     now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
     return now_time
 
-def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device):
+def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, date, time, device):
 
     databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=0.0, databatch_size=1)
+
+    total_loss_mnet = 0
+    total_loss_pt = 0
+    total_loss_ps = 0
+    total_loss_pb = 0
 
     for iter in range(iteration):
 
@@ -89,6 +94,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss = criterion_mse(model_output, torch.tensor(json_data['motion']).to(device))
                 loss.backward()
                 optimizer_mnet.step()
+                total_loss_mnet = total_loss_mnet + loss.cpu().detach()
 
                 # PMNet update
                 if json_data['motion'][0] <= throttle_discr_th:
@@ -113,18 +119,21 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
                 loss_pmt.backward()
                 optimizer_pmt.step()
+                total_loss_pt = total_loss_pt + loss_pmt.cpu().detach()
 
                 optimizer_pms.zero_grad()
                 pmsnet_output = pmsnet.forward(state_tensor).squeeze()
                 loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
                 loss_pms.backward()
                 optimizer_pms.step()
+                total_loss_ps = total_loss_ps + loss_pms.cpu().detach()
 
                 optimizer_pmb.zero_grad()
                 pmbnet_output = pmtnet.forward(state_tensor).squeeze()
                 loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
                 loss_pmb.backward()
                 optimizer_pmb.step()
+                total_loss_pb = total_loss_pb + loss_pmb.cpu().detach()
 
         if MODEL_SAVE is True and iter % 50 == 0:
             # torch.save(model.state_dict(), model_save_dir + get_date() + '_' + get_time() + '_iter' + str(iter) + '.pt')
@@ -135,12 +144,29 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
             torch.save(pmsnet.state_dict(), pms_save_dir + 'iter' + str(iter + 1) + '.pt')
             torch.save(pmbnet.state_dict(), pmb_save_dir + 'iter' + str(iter + 1) + '.pt')
 
-    if MODEL_SAVE is True:
-        torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
-        torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
-        torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
-        torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
-        print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
+            if iter % 1000 == 0:
+                loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_mnet.txt', 'a')
+                loss_mnet_txt.write(str(total_loss_mnet) + '\n')
+                loss_mnet_txt.close()
+
+                loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmt.txt', 'a')
+                loss_pmt_txt.write(str(total_loss_pt) + '\n')
+                loss_pmt_txt.close()
+
+                loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pms.txt', 'a')
+                loss_pms_txt.write(str(total_loss_ps) + '\n')
+                loss_pms_txt.close()
+
+                loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmb.txt', 'a')
+                loss_pmb_txt.write(str(total_loss_pb) + '\n')
+                loss_pmb_txt.close()
+
+    # if MODEL_SAVE is True:
+    #     torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
+    #     torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
+    #     torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
+    #     torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
+        # print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
     else:
         print("[FAKE: NOT SAVED] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
@@ -176,10 +202,10 @@ def main():
         # Train dataset
     train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model,
                     DATASET_DIR, data_list, MNET_MODEL_SAVE_DIR, PMT_MODEL_SAVE_DIR, PMS_MODEL_SAVE_DIR, PMB_MODEL_SAVE_DIR,
-                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device)
+                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, start_date, start_time, device)
 
-    if MODEL_SAVE is True:
-        model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+    # if MODEL_SAVE is True:
+    #     model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
 
     return 0
 

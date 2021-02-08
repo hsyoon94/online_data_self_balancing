@@ -1119,7 +1119,7 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute = 0.1
+    running_time_minute = 0.8
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
@@ -1152,12 +1152,12 @@ def game_loop(args):
         print("MSE error of today", mse_loss)
         print("Novel data ratio of today", novel_ratio[1] , "/", novel_ratio[0], "(", novel_ratio[2], ")" )
 
-        losstxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_loss.txt', 'a')
+        losstxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_test_loss_mnet.txt', 'a')
         losstxt.write(str(mse_loss) + '\n')
         losstxt.close()
 
         noveltxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_novel_ratio.txt', 'a')
-        noveltxt.write(str(novel_ratio) + '\n')
+        noveltxt.write(str(novel_ratio[2]) + '\n')
         noveltxt.close()
 
         if (world and world.recording_enabled):

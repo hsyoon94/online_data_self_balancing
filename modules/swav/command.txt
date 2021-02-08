@@ -1,0 +1,2 @@
+python -m torch.distributed.launch --nproc_per_node=1 main_swav.py --data_path /media/hsyoon/hard2/SDS/dataset_raw --epochs 400 --base_lr 0.6 --final_lr 0.0006 --warmup_epochs 0 --batch_size 1 --size_crops 16 16 --nmb_crops 2 6 --min_scale_crops 0.14 0.05 --max_scale_crops 1. 0.14 --use_fp16 false --freeze_prototypes_niters 10 --queue_length 10 --epoch_queue_starts 10
+

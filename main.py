@@ -64,11 +64,16 @@ def get_time():
     now_time = str(now.hour).zfill(2) + str(now.minute).zfill(2)
     return now_time
 
-def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device):
+def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, date, time, device):
 
     databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=1.0, databatch_size=1)
 
     for iter in range(iteration):
+
+        total_loss_mnet = 0
+        total_loss_pt = 0
+        total_loss_ps = 0
+        total_loss_pb = 0
 
         batch_index = databatch_composer.get_databatch_list()
         for i in range(batch_index.shape[0]):
@@ -93,6 +98,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss = criterion_mse(model_output, torch.tensor(json_data['motion']).to(device))
                 loss.backward()
                 optimizer_mnet.step()
+                total_loss_mnet = total_loss_mnet + loss.cpu().detach().numpy()
 
                 # PMNet update
                 if json_data['motion'][0] <= throttle_discr_th:
@@ -117,21 +123,42 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
                 loss_pmt.backward()
                 optimizer_pmt.step()
+                total_loss_pt = total_loss_pt + loss_pmt.cpu().detach().numpy()
 
                 optimizer_pms.zero_grad()
                 pmsnet_output = pmsnet.forward(state_tensor).squeeze()
                 loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
                 loss_pms.backward()
                 optimizer_pms.step()
+                total_loss_ps = total_loss_ps + loss_pms.cpu().detach().numpy()
 
                 optimizer_pmb.zero_grad()
                 pmbnet_output = pmtnet.forward(state_tensor).squeeze()
                 loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
                 loss_pmb.backward()
                 optimizer_pmb.step()
+                total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
+
 
         if iter % 10 == 0:
             print("Iteration", iter, "for day", day)
+
+    # Save loss!
+    loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_mnet.txt', 'a')
+    loss_mnet_txt.write(str(total_loss_mnet) + '\n')
+    loss_mnet_txt.close()
+
+    loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmt.txt', 'a')
+    loss_pmt_txt.write(str(total_loss_pt) + '\n')
+    loss_pmt_txt.close()
+
+    loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pms.txt', 'a')
+    loss_pms_txt.write(str(total_loss_ps) + '\n')
+    loss_pms_txt.close()
+
+    loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmb.txt', 'a')
+    loss_pmb_txt.write(str(total_loss_pb) + '\n')
+    loss_pmb_txt.close()
 
     if MODEL_SAVE is True:
         torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
@@ -157,7 +184,10 @@ def main():
     start_time = get_time()
 
     # torch.save(model.state_dict(), MODEL_SAVE_DIR + 'day0.pt')
-    # model.load_state_dict(torch.load(MODEL0_FILE))
+    # model.load_state_dict(torch.load(MNET_MODEL0_FILE))
+    # pmt_prob_model.load_state_dict(torch.load(PMT_MODEL0_FILE))
+    # pms_prob_model.load_state_dict(torch.load(PMS_MODEL0_FILE))
+    # pmb_prob_model.load_state_dict(torch.load(PMB_MODEL0_FILE))
 
     optimizer_mnet = optim.Adam(model.parameters(), lr=0.0001)
     optimizer_pmt = optim.Adam(pmt_prob_model.parameters(), lr=0.0001)
@@ -168,6 +198,8 @@ def main():
     criterion_bce = nn.BCELoss()
     forever = True
     day = 0
+
+    # TODO: We have to initialize Pm0, Pb0, Po0 with D0, MNet0, Pb0, Po0 at this point.
 
     data_exchanger = DataExchanger(ONLINE_DATA_DIR, DATASET_DIR)
 
@@ -188,34 +220,44 @@ def main():
                     json_data = json.load(tmp_json)
             except ValueError:
                 print("ONLINE JSON value error with ", online_data_name_list[online_data_index])
-                shutil.move(ONLINE_DATA_DIR + online_data_name_list[online_data_index], REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
+                os.remove(ONLINE_DATA_DIR + online_data_name_list[online_data_index])
+                # shutil.move(, REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
 
             except IOError:
                 print("ONLINE JSON IOerror with ", online_data_name_list[online_data_index])
-                shutil.move(ONLINE_DATA_DIR + online_data_name_list[online_data_index], REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
+                os.remove(ONLINE_DATA_DIR + online_data_name_list[online_data_index])
+                # shutil.move(, REMOVAL_DATA_DIR + online_data_name_list[online_data_index])
 
         # Update online data name list
         online_data_name_list = [f for f in listdir(ONLINE_DATA_DIR) if isfile(join(ONLINE_DATA_DIR, f))]
+
+        print("DATA EXCHANGE STARTS...")
 
         online_data_length = len(online_data_name_list)
         for odi in range(online_data_length):
             data_exchanger.exchange(online_data_name_list[odi])
 
+        print("DATA EXCHANGE ENDS...")
+
+        # TODO : Update data distribution index/rank in this step. (D0 -> D1, Pm0 -> Pm1, Pb0 -> Pb1, Po0 -> Po1)
+
         print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "DATASET UPDATE COMPLETE THEN GET READY FOR NEURAL NETWORK TRAINING...", sep="")
 
         data_list = [f for f in listdir(DATASET_DIR) if isfile(join(DATASET_DIR, f))]
-        # data_list.sort()
 
-        # Train dataset
+        # Update MNet
         train_model(day, TRAINING_ITERATION, model, pmt_prob_model, pms_prob_model, pmb_prob_model,
                     DATASET_DIR, data_list, MNET_MODEL_SAVE_DIR, PMT_MODEL_SAVE_DIR, PMS_MODEL_SAVE_DIR, PMB_MODEL_SAVE_DIR,
-                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, device)
+                    criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, start_date, start_time, device)
 
         # Go to next day and update policy network parameter.
         day = day + 1
 
         if MODEL_SAVE is True:
             model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+            pms_prob_model.load_state_dict(torch.load(PMS_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+            pmt_prob_model.load_state_dict(torch.load(PMT_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+            pmb_prob_model.load_state_dict(torch.load(PMB_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
 
     return 0
 

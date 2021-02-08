@@ -41,7 +41,7 @@ class DataBatchComposer():
 
     def extract_random_batch(self):
         # Random sampling
-        databatch = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 100), replace=True)
+        databatch = np.random.choice(len(self.data_list) - 1, int(len(self.data_list) / 1000), replace=True)
         return databatch
 
     def prob(self, data):

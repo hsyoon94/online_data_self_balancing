@@ -1,0 +1,2699 @@
+INFO - 02/08/21 11:02:50 - 0:00:00 - ============ Initialized logger ============
+INFO - 02/08/21 11:02:50 - 0:00:00 - arch: resnet50
+                                     base_lr: 0.6
+                                     batch_size: 1
+                                     checkpoint_freq: 25
+                                     crops_for_assign: [0, 1]
+                                     data_path: /media/hsyoon/hard2/SDS/dataset_raw
+                                     dist_url: env://
+                                     dump_checkpoints: ./checkpoints
+                                     dump_path: .
+                                     epoch_queue_starts: 10
+                                     epochs: 400
+                                     epsilon: 0.05
+                                     feat_dim: 128
+                                     final_lr: 0.0006
+                                     freeze_prototypes_niters: 10
+                                     gpu_to_work_on: 0
+                                     hidden_mlp: 2048
+                                     improve_numerical_stability: False
+                                     is_slurm_job: False
+                                     local_rank: 0
+                                     max_scale_crops: [1.0, 0.14]
+                                     min_scale_crops: [0.14, 0.05]
+                                     nmb_crops: [2, 6]
+                                     nmb_prototypes: 3000
+                                     queue_length: 10
+                                     rank: 0
+                                     seed: 31
+                                     sinkhorn_iterations: 3
+                                     size_crops: [16, 16]
+                                     start_warmup: 0
+                                     sync_bn: pytorch
+                                     syncbn_process_group_size: 8
+                                     temperature: 0.1
+                                     use_fp16: False
+                                     use_pil_blur: True
+                                     warmup_epochs: 0
+                                     wd: 1e-06
+                                     workers: 10
+                                     world_size: 1
+INFO - 02/08/21 11:02:50 - 0:00:00 - The experiment will be stored in .
+                                     
+
+INFO - 02/08/21 11:02:50 - 0:00:00 - Building data done with 15047 images loaded.
+INFO - 02/08/21 11:02:50 - 0:00:00 - ResNet(
+                                       (padding): ConstantPad2d(padding=(1, 1, 1, 1), value=0.0)
+                                       (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(2, 2), bias=False)
+                                       (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                       (relu): ReLU(inplace=True)
+                                       (maxpool): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+                                       (layer1): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                             (1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer2): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (3): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer3): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (3): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (4): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (5): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer4): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
+                                       (projection_head): Sequential(
+                                         (0): Linear(in_features=2048, out_features=2048, bias=True)
+                                         (1): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                         (2): ReLU(inplace=True)
+                                         (3): Linear(in_features=2048, out_features=128, bias=True)
+                                       )
+                                       (prototypes): Linear(in_features=128, out_features=3000, bias=False)
+                                     )
+INFO - 02/08/21 11:02:50 - 0:00:00 - Building model done.
+INFO - 02/08/21 11:03:06 - 0:00:17 - Building optimizer done.
+INFO - 02/08/21 11:03:06 - 0:00:17 - ============ Starting epoch 0 ... ============
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:06 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:03:07 - 0:00:17 - Epoch: [0][0]	Time 0.640 (0.640)	Data 0.209 (0.209)	Loss 8.3922 (8.3922)	Lr: 0.0001
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:07 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:08 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:03:09 - 0:00:19 - Epoch: [0][50]	Time 0.033 (0.046)	Data 0.000 (0.004)	Loss 8.0075 (8.1064)	Lr: 0.0001
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:09 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:03:10 - 0:00:21 - Epoch: [0][100]	Time 0.033 (0.041)	Data 0.000 (0.002)	Loss 8.0065 (8.0572)	Lr: 0.0001
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:10 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:11 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:03:12 - 0:00:23 - Epoch: [0][150]	Time 0.032 (0.039)	Data 0.000 (0.001)	Loss 8.0065 (8.0404)	Lr: 0.0001
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:12 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:13 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:03:14 - 0:00:24 - Epoch: [0][200]	Time 0.034 (0.038)	Data 0.000 (0.001)	Loss 8.0064 (8.0320)	Lr: 0.0001
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:03:14 - 0:00:24 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:25 - 0:00:00 - ============ Initialized logger ============
+INFO - 02/08/21 11:04:25 - 0:00:00 - arch: resnet50
+                                     base_lr: 0.6
+                                     batch_size: 1
+                                     checkpoint_freq: 25
+                                     crops_for_assign: [0, 1]
+                                     data_path: /media/hsyoon/hard2/SDS/dataset_raw
+                                     dist_url: env://
+                                     dump_checkpoints: ./checkpoints
+                                     dump_path: .
+                                     epoch_queue_starts: 10
+                                     epochs: 400
+                                     epsilon: 0.05
+                                     feat_dim: 128
+                                     final_lr: 0.0006
+                                     freeze_prototypes_niters: 10
+                                     gpu_to_work_on: 0
+                                     hidden_mlp: 2048
+                                     improve_numerical_stability: False
+                                     is_slurm_job: False
+                                     local_rank: 0
+                                     max_scale_crops: [1.0, 0.14]
+                                     min_scale_crops: [0.14, 0.05]
+                                     nmb_crops: [2, 6]
+                                     nmb_prototypes: 3000
+                                     queue_length: 10
+                                     rank: 0
+                                     seed: 31
+                                     sinkhorn_iterations: 3
+                                     size_crops: [16, 16]
+                                     start_warmup: 0
+                                     sync_bn: pytorch
+                                     syncbn_process_group_size: 8
+                                     temperature: 0.1
+                                     use_fp16: False
+                                     use_pil_blur: True
+                                     warmup_epochs: 0
+                                     wd: 1e-06
+                                     workers: 10
+                                     world_size: 1
+INFO - 02/08/21 11:04:25 - 0:00:00 - The experiment will be stored in .
+                                     
+
+INFO - 02/08/21 11:04:25 - 0:00:00 - Building data done with 15047 images loaded.
+INFO - 02/08/21 11:04:25 - 0:00:00 - ResNet(
+                                       (padding): ConstantPad2d(padding=(1, 1, 1, 1), value=0.0)
+                                       (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(2, 2), bias=False)
+                                       (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                       (relu): ReLU(inplace=True)
+                                       (maxpool): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+                                       (layer1): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                             (1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer2): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (3): Bottleneck(
+                                           (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer3): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (3): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (4): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (5): Bottleneck(
+                                           (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (layer4): Sequential(
+                                         (0): Bottleneck(
+                                           (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                           (downsample): Sequential(
+                                             (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                                             (1): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           )
+                                         )
+                                         (1): Bottleneck(
+                                           (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                         (2): Bottleneck(
+                                           (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                                           (bn2): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                                           (bn3): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                           (relu): ReLU(inplace=True)
+                                         )
+                                       )
+                                       (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
+                                       (projection_head): Sequential(
+                                         (0): Linear(in_features=2048, out_features=2048, bias=True)
+                                         (1): SyncBatchNorm(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                         (2): ReLU(inplace=True)
+                                         (3): Linear(in_features=2048, out_features=128, bias=True)
+                                       )
+                                       (prototypes): Linear(in_features=128, out_features=3000, bias=False)
+                                     )
+INFO - 02/08/21 11:04:25 - 0:00:00 - Building model done.
+INFO - 02/08/21 11:04:41 - 0:00:16 - Building optimizer done.
+INFO - 02/08/21 11:04:41 - 0:00:16 - ============ Starting epoch 0 ... ============
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:41 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:16 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:42 - 0:00:17 - Epoch: [0][0]	Time 0.624 (0.624)	Data 0.200 (0.200)	Loss 8.3922 (8.3922)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:42 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:17 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:43 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:18 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:44 - 0:00:19 - Epoch: [0][50]	Time 0.033 (0.047)	Data 0.000 (0.004)	Loss 8.0075 (8.1063)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:44 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:19 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:45 - 0:00:20 - Epoch: [0][100]	Time 0.033 (0.040)	Data 0.000 (0.002)	Loss 8.0065 (8.0572)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:45 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:20 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:46 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:21 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:47 - 0:00:22 - Epoch: [0][150]	Time 0.033 (0.038)	Data 0.000 (0.001)	Loss 8.0065 (8.0404)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:47 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:22 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:48 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:23 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:49 - 0:00:24 - Epoch: [0][200]	Time 0.033 (0.037)	Data 0.000 (0.001)	Loss 8.0064 (8.0320)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:49 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:24 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:50 - 0:00:25 - Epoch: [0][250]	Time 0.033 (0.037)	Data 0.000 (0.001)	Loss 8.0065 (8.0269)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:50 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:25 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:51 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:26 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:52 - 0:00:27 - Epoch: [0][300]	Time 0.034 (0.036)	Data 0.000 (0.001)	Loss 8.0064 (8.0235)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:52 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:27 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:53 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:28 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:54 - 0:00:29 - Epoch: [0][350]	Time 0.038 (0.036)	Data 0.000 (0.001)	Loss 8.0064 (8.0211)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:54 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:29 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:29 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:55 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:30 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:56 - 0:00:31 - Epoch: [0][400]	Time 0.034 (0.036)	Data 0.000 (0.001)	Loss 8.0064 (8.0192)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:56 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:31 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:57 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:32 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:58 - 0:00:33 - Epoch: [0][450]	Time 0.031 (0.036)	Data 0.000 (0.001)	Loss 8.0064 (8.0178)	Lr: 0.0001
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:58 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:33 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:04:59 - 0:00:34 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:04:59 - 0:00:34 - Epoch: [0][500]	Time 0.030 (0.036)	Data 0.000 (0.001)	Loss 8.0064 (8.0167)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:00 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:35 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:01 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:02 - 0:00:36 - Epoch: [0][550]	Time 0.041 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0157)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:36 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:02 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:37 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:03 - 0:00:38 - Epoch: [0][600]	Time 0.038 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0150)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:03 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:38 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:04 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:39 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:05 - 0:00:40 - Epoch: [0][650]	Time 0.031 (0.036)	Data 0.000 (0.002)	Loss 8.0064 (8.0143)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:05 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:40 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:40 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:06 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:41 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:07 - 0:00:42 - Epoch: [0][700]	Time 0.034 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0137)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:07 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:42 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:08 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:43 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:43 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:09 - 0:00:44 - Epoch: [0][750]	Time 0.034 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0132)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:09 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:44 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:44 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:10 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:45 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:11 - 0:00:46 - Epoch: [0][800]	Time 0.031 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0128)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:11 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:46 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:12 - 0:00:47 - STREAM b'IDAT' 41 8192
+INFO - 02/08/21 11:05:12 - 0:00:47 - Epoch: [0][850]	Time 0.032 (0.037)	Data 0.000 (0.002)	Loss 8.0064 (8.0124)	Lr: 0.0001
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:47 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IHDR' 16 13
+DEBUG - 02/08/21 11:05:13 - 0:00:48 - STREAM b'IDAT' 41 8192
