@@ -1029,14 +1029,11 @@ class CameraManager(object):
                 print("Current Action", self.current_action)
                 current_action = np.array([self.current_action.throttle, self.current_action.steer, self.current_action.brake])
                 if int(image.frame) % 5 == 0 and current_action is not None and image is not None:
-                    np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/' + now_date + '_' + now_time + '_%08d.txt' % image.frame, current_action)
-                    image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_%08d' % image.frame)
+                    np.savetxt('/media/hsyoon/hard2/SDS/dataset_raw/motion/' + now_date + '_' + now_time + '_' + str(image.frame) + '.txt', current_action)
+                    image.save_to_disk('/media/hsyoon/hard2/SDS/dataset_raw/image/' + now_date + '_' + now_time + '_' + str(image.frame))
             except AttributeError as AE:
                 print(AE)
                 print("Warming up for action connection...")
-
-            # pil_image.save_to_disk('_out/%08d' % image.frame)
-
 
 # ==============================================================================
 # -- game_loop() ---------------------------------------------------------------

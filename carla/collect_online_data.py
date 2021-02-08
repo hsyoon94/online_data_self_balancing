@@ -136,6 +136,7 @@ except ImportError:
     raise RuntimeError('cannot import numpy, make sure numpy package is installed')
 
 DATA_SAVE_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
+IMAGE_DATA_SAVE_DIR = '/media/hsyoon/hard2/SDS/dataset_online_image/image/'
 
 # ==============================================================================
 # -- Global functions ----------------------------------------------------------
@@ -1095,6 +1096,8 @@ class CameraManager(object):
                             with open(DATA_SAVE_DIR + now_date + "_" + now_time + "_" + str(image.frame) + ".json", 'w', encoding='utf-8') as make_file:
                                 json.dump(data, make_file, indent="\t")
 
+                            image.save_to_disk(IMAGE_DATA_SAVE_DIR + now_date + '_' + now_time + "_" + str(image.frame))
+
                     else:
                         if self.total_online_data_count % 20 == 0:
                             print("Current online data is tedious!")
@@ -1119,7 +1122,8 @@ def game_loop(args):
     pygame.init()
     pygame.font.init()
     world = None
-    running_time_minute = 0.8
+    # default : 0.8
+    running_time_minute = 0.1
     try:
         client = carla.Client(args.host, args.port)
         client.set_timeout(2.0)
@@ -1152,11 +1156,11 @@ def game_loop(args):
         print("MSE error of today", mse_loss)
         print("Novel data ratio of today", novel_ratio[1] , "/", novel_ratio[0], "(", novel_ratio[2], ")" )
 
-        losstxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_test_loss_mnet.txt', 'a')
+        losstxt = open('/home/hsyoon/job/SDS/log/' + str(args.date) + '_' + str(args.time) + '_test_loss_mnet.txt', 'a')
         losstxt.write(str(mse_loss) + '\n')
         losstxt.close()
 
-        noveltxt = open('/home/hsyoon/job/SDS/log/' + args.date + '_' + args.time + '_novel_ratio.txt', 'a')
+        noveltxt = open('/home/hsyoon/job/SDS/log/' + str(args.date) + '_' + (args.time) + '_novel_ratio.txt', 'a')
         noveltxt.write(str(novel_ratio[2]) + '\n')
         noveltxt.close()
 

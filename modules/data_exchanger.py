@@ -6,10 +6,12 @@ import json
 
 
 class DataExchanger():
-    def __init__(self, online_data_dir, dataset_dir):
+    def __init__(self, online_data_dir, online_data_image_dir, dataset_dir, dataset_image_dir):
         self.data_removal_dir = '/media/hsyoon/hard2/SDS/data_removal/'
         self.online_data_dir = online_data_dir
+        self.online_data_image_dir = online_data_image_dir
         self.dataset_dir = dataset_dir
+        self.dataset_image_dir = dataset_image_dir
         self.dataset_name_list = [f1 for f1 in listdir(self.dataset_dir) if isfile(join(self.dataset_dir, f1))]
         self.online_data_name_list = [f2 for f2 in listdir(self.online_data_dir) if isfile(join(self.online_data_dir, f2))]
 
@@ -23,8 +25,10 @@ class DataExchanger():
 
         # discard dataset data to trash
         shutil.move(self.dataset_dir + discard_data_name, self.data_removal_dir + discard_data_name)
+        shutil.move(self.dataset_image_dir + discard_data_name.split('.')[0] + '.png', self.data_removal_dir + discard_data_name.split('.')[0] + '.png')
         # append dataset data to trash
         shutil.move(self.online_data_dir + online_novel_data_name, self.dataset_dir + online_novel_data_name)
+        shutil.move(self.online_data_image_dir + online_novel_data_name.split('.')[0] + '.png', self.dataset_image_dir + online_novel_data_name.split('.')[0] + '.png')
         self.update_data_list()
 
     def select_discard_data(self):
