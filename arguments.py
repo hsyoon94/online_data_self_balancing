@@ -60,6 +60,9 @@ def get_args():
     parser.add_argument("--use_swav", default=False, help="want to use swap")
     parser.add_argument("--use_pil_blur", default=False, help="want to use swap")
 
+    parser.add_argument("--date", help="want to use swap")
+    parser.add_argument("--time", help="want to use swap")
+
 
     args = parser.parse_args()
 

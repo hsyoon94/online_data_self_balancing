@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import math
 from numpy import linalg as LA
+from arguments import get_args
 
 torch.set_num_threads(2)
 
@@ -14,6 +15,7 @@ is_cuda = torch.cuda.is_available()
 # device = torch.device('cuda' if is_cuda else 'cpu')
 device = 'cpu'
 
+import modules.swav.src.resnet50 as resnet_models
 from .bmnet import MNet
 from .probability import motion_probability as PM_NET
 from os import listdir
@@ -24,6 +26,7 @@ MNET_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/mnet/"
 PMT_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pmt/"
 PMS_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pms/"
 PMB_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/pmb/"
+PO_MODEL_DIR = "/home/hsyoon/job/SDS/trained_models/po/"
 
 
 THROTTLE_DISCR_DIM = 2
@@ -35,6 +38,9 @@ steer_discr_th2 = 0.2
 
 BRAKE_DISCR_DIM = 2
 brake_discr_th = 0.1
+
+global args
+args = get_args()
 
 def mse_loss(arr1, arr2):
     error = 0
@@ -60,6 +66,7 @@ class DataFilter():
         self.pmt_threshold = 0.7
         self.pms_threshold = 0.7
         self.pmb_threshold = 0.7
+        self.po_threshold = 0.7
 
         self.pm_mse_threshold = 0.33
 
@@ -73,17 +80,25 @@ class DataFilter():
         self.pms_net = PM_NET(mnet_state_size, mnet_state_dim, STEER_DISCR_DIM, device)
         self.pmb_net = PM_NET(mnet_state_size, mnet_state_dim, BRAKE_DISCR_DIM, device)
 
+        # self.po_net = resnet_models.__dict__[args.arch](normalize=True, hidden_mlp=args.hidden_mlp, output_dim=args.feat_dim, nmb_prototypes=args.nmb_prototypes, )
+        # self.po_net = nn.SyncBatchNorm.convert_sync_batchnorm(self.po_net)
+        # self.po_net = nn.parallel.DistributedDataParallel(self.po_net, device_ids=[args.gpu_to_work_on], find_unused_parameters=True, )
+
+        self.po_net = resnet_models.__dict__[args.arch](normalize=True, hidden_mlp=2048, output_dim=128, nmb_prototypes=1000, )
+        self.po_net = nn.SyncBatchNorm.convert_sync_batchnorm(self.po_net)
 
         # FOR THE LATEST MODELS
         mnet_list = [f for f in listdir(MNET_MODEL_DIR) if isfile(join(MNET_MODEL_DIR, f))]
         pmt_list = [ft for ft in listdir(PMT_MODEL_DIR) if isfile(join(PMT_MODEL_DIR, ft))]
         pms_list = [fs for fs in listdir(PMS_MODEL_DIR) if isfile(join(PMS_MODEL_DIR, fs))]
         pmb_list = [fb for fb in listdir(PMB_MODEL_DIR) if isfile(join(PMB_MODEL_DIR, fb))]
+        po_list = [fo for fo in listdir(PO_MODEL_DIR) if isfile(join(PO_MODEL_DIR, fo))]
 
         mnet_list.sort()
         pmt_list.sort()
         pms_list.sort()
         pmb_list.sort()
+        po_list.sort()
 
         self.pmt_gt_index = 0
         self.pms_gt_index = 0
@@ -94,6 +109,9 @@ class DataFilter():
         self.pmt_net.load_state_dict(torch.load(PMT_MODEL_DIR + pmt_list[-1]))
         self.pms_net.load_state_dict(torch.load(PMS_MODEL_DIR + pms_list[-1]))
         self.pmb_net.load_state_dict(torch.load(PMB_MODEL_DIR + pmb_list[-1]))
+        self.po_net.load_state_dict(torch.load(PO_MODEL_DIR + po_list[-1]))
+
+        print("PO!!", self.po_net)
 
         self.accumulated_mse_error = 0
         self.motion_sequence = list()

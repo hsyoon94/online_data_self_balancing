@@ -55,7 +55,7 @@ torch.set_num_threads(2)
 is_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if is_cuda else 'cpu')
 
-MODEL_SAVE = False
+MODEL_SAVE = True
 
 MULTI_CROP_SIZE = 32
 STATE_SIZE = 64
@@ -135,7 +135,7 @@ def shoot_infs(inp_tensor):
                 inp_tensor[ind[0]] = m
     return inp_tensor
 
-def train_swav(train_loader, model, optimizer, epoch, lr_schedule, queue):
+def train_swav(args, train_loader, model, optimizer, epoch, lr_schedule, queue):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -220,7 +220,6 @@ def train_swav(train_loader, model, optimizer, epoch, lr_schedule, queue):
                     data_time=data_time,
                     loss=losses,
                     lr = 1e-4,
-                    # lr=optimizer.optim.param_groups[0]["lr"],
                 )
             )
     return (epoch, losses.avg), queue
@@ -335,7 +334,6 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
 
 
 def main():
-    global args
     args = get_args()
     # USE_SWAV = args.use_swav
     USE_SWAV = True
@@ -375,16 +373,15 @@ def main():
         logger.info("Building optimizer done.")
 
         # wrap model
-        model_swav = nn.parallel.DistributedDataParallel(model_swav, device_ids=[args.gpu_to_work_on],
-                                                         find_unused_parameters=True, )
+        model_swav = nn.parallel.DistributedDataParallel(model_swav, device_ids=[args.gpu_to_work_on], find_unused_parameters=True, )
 
         # build the queue
-        # queue = None
-        # queue_path = os.path.join(args.dump_path, "queue" + str(args.rank) + ".pth")
-        # if os.path.isfile(queue_path):
-        #     queue = torch.load(queue_path)["queue"]
-        # # the queue needs to be divisible by the batch size
-        # args.queue_length -= args.queue_length % (args.batch_size * args.world_size)
+        queue = None
+        queue_path = os.path.join(args.dump_path, "queue" + str(args.rank) + ".pth")
+        if os.path.isfile(queue_path):
+            queue = torch.load(queue_path)["queue"]
+        # the queue needs to be divisible by the batch size
+        args.queue_length -= args.queue_length % (args.batch_size * args.world_size)
 
         cudnn.benchmark = True
         """
@@ -488,7 +485,7 @@ def main():
                     ).cuda()
 
                 # train the network
-                scores, queue = train_swav(train_loader_swav, model_swav, optimizer_swav, epoch, lr_schedule, queue)
+                scores, queue = train_swav(args, train_loader_swav, model_swav, optimizer_swav, epoch, lr_schedule, queue)
                 training_stats.update(scores)
 
                 # save checkpoints
@@ -512,6 +509,7 @@ def main():
                 if queue is not None:
                     torch.save({"queue": queue}, queue_path)
 
+            torch.save(model_swav.state_dict(), PO_MODEL_SAVE_DIR + 'day' + str(day + 1) + '.pt')
         """
         END : TRAIN SWAV
         """
@@ -519,12 +517,12 @@ def main():
         # Go to next day and update policy network parameter.
         day = day + 1
 
-        if MODEL_SAVE is True:
-            model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
-            pms_prob_model.load_state_dict(torch.load(PMS_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
-            pmt_prob_model.load_state_dict(torch.load(PMT_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
-            pmb_prob_model.load_state_dict(torch.load(PMB_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
-            model_swav.load_state_dict(torch.load(PO_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+        # if MODEL_SAVE is True:
+        #     model.load_state_dict(torch.load(MNET_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+        #     pms_prob_model.load_state_dict(torch.load(PMS_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+        #     pmt_prob_model.load_state_dict(torch.load(PMT_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+        #     pmb_prob_model.load_state_dict(torch.load(PMB_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
+        #     model_swav.load_state_dict(torch.load(PO_MODEL_SAVE_DIR + 'day' + str(day) + '.pt'))
 
     return 0
 
