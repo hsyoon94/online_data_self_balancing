@@ -232,7 +232,8 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
                 criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb,
                 date, time, device):
 
-    databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=1.0, databatch_size=1)
+    databatch_composer = DataBatchComposer(dataset_dir, 0.0, 1, 64, 3)
+    databatch_composer.update_probability()
 
     for iter in range(iteration):
 
@@ -240,8 +241,8 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
         total_loss_pt = 0
         total_loss_ps = 0
         total_loss_pb = 0
+        batch_index = databatch_composer.extract_databatch_wigh_high_entropy()
 
-        batch_index = databatch_composer.get_databatch_list()
         for i in range(batch_index.shape[0]):
 
             try:
@@ -420,7 +421,7 @@ def main():
     forever = True
     day = 0
 
-    data_exchanger = DataExchanger(ONLINE_DATA_DIR, ONLINE_DATA_IMAGE_DIR, DATASET_DIR, DATASET_IMAGE_DIR)
+    data_exchanger = DataExchanger(ONLINE_DATA_DIR, ONLINE_DATA_IMAGE_DIR, DATASET_DIR, DATASET_IMAGE_DIR, 64, 3)
 
     print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "INCREMENTAL INTELLIGENCE SYSTEM OPERATING...", sep="")
     while forever:
