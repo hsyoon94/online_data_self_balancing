@@ -53,7 +53,7 @@ def softmax(a):
     return y
 
 class DataBatchComposer():
-    def __init__(self, dataset_dir, entropy_threshold, databatch_size, mnet_state_size, mnet_state_dim):
+    def __init__(self, dataset_dir, entropy_threshold, databatch_size, mnet_state_size, mnet_state_dim, date, time):
         self.dataset_dir = dataset_dir
         self.data_list = None
         self.entropy_threshold = entropy_threshold
@@ -63,6 +63,8 @@ class DataBatchComposer():
         self.pmt_net = PM_NET(mnet_state_size, mnet_state_dim, THROTTLE_DISCR_DIM, device)
         self.pms_net = PM_NET(mnet_state_size, mnet_state_dim, STEER_DISCR_DIM, device)
         self.pmb_net = PM_NET(mnet_state_size, mnet_state_dim, BRAKE_DISCR_DIM, device)
+        self.date = date
+        self.time = time
 
         self.data_name_list_length = 0
         self.probability_with_index = list()
@@ -140,3 +142,7 @@ class DataBatchComposer():
 
         dataset_entropy = self.compute_entropy(list(range(0, len(self.probability_with_index))), self.probability_with_index)
         print("DATASET ENTROPY:", dataset_entropy)
+
+        dataset_entropy_txt = open('/home/hsyoon/job/SDS/log/' + self.date + '/' + self.time + '/dataset_entropy.txt', 'a')
+        dataset_entropy_txt.write(str(dataset_entropy) + '\n')
+        dataset_entropy_txt.close()

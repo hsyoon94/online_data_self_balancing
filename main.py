@@ -232,7 +232,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
                 criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb,
                 date, time, device):
 
-    databatch_composer = DataBatchComposer(dataset_dir, 0.0, 1, 64, 3)
+    databatch_composer = DataBatchComposer(dataset_dir, 0.0, 1, 64, 3, date, time)
     databatch_composer.update_probability()
 
     for iter in range(iteration):
@@ -307,7 +307,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
                 total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
 
         if iter % 10 == 0:
-            print("Iteration", iter, "for day", day)
+            print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "Iteration", iter, "for day", day)
 
     # Save loss!
     loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
@@ -449,13 +449,13 @@ def main():
         # Update online data name list
         online_data_name_list = [f for f in listdir(ONLINE_DATA_DIR) if isfile(join(ONLINE_DATA_DIR, f))]
 
-        print("DATA EXCHANGE STARTS...")
+        print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "DATA EXCHANGE STARTS...")
 
         # online_data_length = len(online_data_name_list)
         # for odi in range(online_data_length):
         #     data_exchanger.exchange(online_data_name_list[odi])
         data_exchanger.exchange_whole(online_data_name_list)
-        print("DATA EXCHANGE ENDS...")
+        print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "DATA EXCHANGE ENDS...")
 
         # TODO : Update data distribution index/rank in this step. (D0 -> D1, Pm0 -> Pm1, Pb0 -> Pb1, Po0 -> Po1)
 

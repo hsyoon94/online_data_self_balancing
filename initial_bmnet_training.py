@@ -13,13 +13,14 @@ import torch.optim as optim
 import torch.nn as nn
 from os import listdir
 from os.path import isfile, join
+import os
 
 torch.set_num_threads(2)
 
 is_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if is_cuda else 'cpu')
 
-MODEL_SAVE = False
+MODEL_SAVE = True
 
 STATE_SIZE = 64
 STATE_DIM = 3
@@ -145,28 +146,28 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
             torch.save(pmbnet.state_dict(), pmb_save_dir + 'iter' + str(iter + 1) + '.pt')
 
             if iter % 1000 == 0:
-                loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_mnet.txt', 'a')
+                loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
                 loss_mnet_txt.write(str(total_loss_mnet) + '\n')
                 loss_mnet_txt.close()
 
-                loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmt.txt', 'a')
+                loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmt.txt', 'a')
                 loss_pmt_txt.write(str(total_loss_pt) + '\n')
                 loss_pmt_txt.close()
 
-                loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pms.txt', 'a')
+                loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pms.txt', 'a')
                 loss_pms_txt.write(str(total_loss_ps) + '\n')
                 loss_pms_txt.close()
 
-                loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmb.txt', 'a')
+                loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmb.txt', 'a')
                 loss_pmb_txt.write(str(total_loss_pb) + '\n')
                 loss_pmb_txt.close()
 
-    # if MODEL_SAVE is True:
-    #     torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
-    #     torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
-    #     torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
-    #     torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
-        # print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
+    if MODEL_SAVE is True:
+        torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
+        torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
+        torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
+        torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
+        print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
     else:
         print("[FAKE: NOT SAVED] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
@@ -183,6 +184,12 @@ def main():
 
     start_date = get_date()
     start_time = get_time()
+
+    if os.path.exists('/home/hsyoon/job/SDS/log/' + start_date + '/') is False:
+        os.mkdir('/home/hsyoon/job/SDS/log/' + start_date)
+
+    if os.path.exists('/home/hsyoon/job/SDS/log/' + start_date + '/' + start_time + '/') is False:
+        os.mkdir('/home/hsyoon/job/SDS/log/' + start_date + '/' + start_time + '/')
 
     optimizer_mnet = optim.Adam(model.parameters(), lr=0.0001)
     optimizer_pmt = optim.Adam(pmt_prob_model.parameters(), lr=0.0001)
