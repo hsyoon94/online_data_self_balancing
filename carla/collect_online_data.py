@@ -62,6 +62,7 @@ import copy
 
 from modules.data_filter import DataFilter
 from matplotlib import cm
+import torch
 
 try:
     sys.path.append(glob.glob('/home/software/CARLA_0.9.9/PythonAPI/carla/dist/carla-0.9.9-py3.7-linux-x86_64.egg')[0])
@@ -1083,7 +1084,10 @@ class CameraManager(object):
 
                     self.total_online_data_count = self.total_online_data_count + 1
 
-                    if self.data_filter.is_novel(self.state_sequence_numpy, current_action) is True:
+                    input_for_swav = torch.tensor(tmp_bgr_image).cpu()[:, :, :3]
+                    input_for_swav = torch.reshape(input_for_swav, (1, 3, input_for_swav.shape[0], input_for_swav.shape[1])).float()
+
+                    if self.data_filter.is_novel(self.state_sequence_numpy, input_for_swav, current_action) is True:
                         self.novel_online_data_count = self.novel_online_data_count + 1
                         if self.total_online_data_count % 20 == 0:
                             print("Current online data is novel!")

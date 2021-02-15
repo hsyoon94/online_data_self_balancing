@@ -84,7 +84,7 @@ class DataFilter():
         # self.po_net = nn.SyncBatchNorm.convert_sync_batchnorm(self.po_net)
         # self.po_net = nn.parallel.DistributedDataParallel(self.po_net, device_ids=[args.gpu_to_work_on], find_unused_parameters=True, )
 
-        self.po_net = resnet_models.__dict__[args.arch](normalize=True, hidden_mlp=2048, output_dim=128, nmb_prototypes=1000, )
+        self.po_net = resnet_models.__dict__[args.arch](normalize=True, hidden_mlp=2048, output_dim=128, nmb_prototypes=1000, ).to(device)
         self.po_net = nn.SyncBatchNorm.convert_sync_batchnorm(self.po_net)
 
         # FOR THE LATEST MODELS
@@ -111,14 +111,12 @@ class DataFilter():
         self.pmb_net.load_state_dict(torch.load(PMB_MODEL_DIR + pmb_list[-1]))
         self.po_net.load_state_dict(torch.load(PO_MODEL_DIR + po_list[-1]))
 
-        print("PO!!", self.po_net)
-
         self.accumulated_mse_error = 0
         self.motion_sequence = list()
         self.ensemble_frequency = 3
         self.motion_std = None
 
-    def is_novel(self, online_state, gt_motion):
+    def is_novel(self, online_state, cur_image, gt_motion):
 
         self.pm_probability_novelty = False
         self.pm_uncertainty_novelty = False
@@ -144,6 +142,9 @@ class DataFilter():
                     pms = self.pms_net(online_state_tensor).cpu().detach().squeeze()
                     pmt = self.pmt_net(online_state_tensor).cpu().detach().squeeze()
                     pmb = self.pmb_net(online_state_tensor).cpu().detach().squeeze()
+                    # po = self.po_net(cur_image.to(device)).cpu().detach().squeeze()
+
+                    # print("po", po)
 
                     if gt_motion[0] < throttle_discr_th:
                         self.pmt_gt_index = 0

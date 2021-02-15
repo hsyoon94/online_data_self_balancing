@@ -156,9 +156,11 @@ def train_swav(args, train_loader, model, optimizer, epoch, lr_schedule, queue):
 
         # normalize the prototypes
         with torch.no_grad():
-            w = model.module.prototypes.weight.data.clone()
+            # w = model.module.prototypes.weight.data.clone()
+            w = model.prototypes.weight.data.clone()
             w = nn.functional.normalize(w, dim=1, p=2)
-            model.module.prototypes.weight.copy_(w)
+            # model.module.prototypes.weight.copy_(w)
+            model.prototypes.weight.copy_(w)
 
         # ============ multi-res forward passes ... ============
         embedding, output = model(inputs)
@@ -175,7 +177,8 @@ def train_swav(args, train_loader, model, optimizer, epoch, lr_schedule, queue):
                 if queue is not None:
                     if use_the_queue or not torch.all(queue[i, -1, :] == 0):
                         use_the_queue = True
-                        out = torch.cat((torch.mm(queue[i],model.module.prototypes.weight.t()), out))
+                        # out = torch.cat((torch.mm(queue[i],model.module.prototypes.weight.t()), out))
+                        out = torch.cat((torch.mm(queue[i], model.prototypes.weight.t()), out))
                     # fill the queue
                     queue[i, bs:] = queue[i, :-bs].clone()
                     queue[i, :bs] = embedding[crop_id * bs: (crop_id + 1) * bs]
@@ -296,7 +299,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
                 total_loss_ps = total_loss_ps + loss_pms.cpu().detach().numpy()
 
                 optimizer_pmb.zero_grad()
-                pmbnet_output = pmtnet.forward(state_tensor).squeeze()
+                pmbnet_output = pmbnet.forward(state_tensor).squeeze()
                 loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
                 loss_pmb.backward()
                 optimizer_pmb.step()
@@ -306,19 +309,19 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
             print("Iteration", iter, "for day", day)
 
     # Save loss!
-    loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_mnet.txt', 'a')
+    loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
     loss_mnet_txt.write(str(total_loss_mnet) + '\n')
     loss_mnet_txt.close()
 
-    loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmt.txt', 'a')
+    loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmt.txt', 'a')
     loss_pmt_txt.write(str(total_loss_pt) + '\n')
     loss_pmt_txt.close()
 
-    loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pms.txt', 'a')
+    loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pms.txt', 'a')
     loss_pms_txt.write(str(total_loss_ps) + '\n')
     loss_pms_txt.close()
 
-    loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '_' + time + '_training_loss_pmb.txt', 'a')
+    loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmb.txt', 'a')
     loss_pmb_txt.write(str(total_loss_pb) + '\n')
     loss_pmb_txt.close()
 
@@ -327,16 +330,15 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
         torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
         torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
         torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
-        print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
+        print("Day", day, "training ends and model saved to", get_date() + '/' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
     else:
-        print("[FAKE: NOT SAVED] Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
+        print("[FAKE: NOT SAVED] Day", day, "training ends and model saved to", get_date() + '/' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
 
 def main():
     args = get_args()
-    # USE_SWAV = args.use_swav
-    USE_SWAV = True
+    USE_SWAV = args.use_swav
 
     if USE_SWAV:
         """
@@ -373,7 +375,7 @@ def main():
         logger.info("Building optimizer done.")
 
         # wrap model
-        model_swav = nn.parallel.DistributedDataParallel(model_swav, device_ids=[args.gpu_to_work_on], find_unused_parameters=True, )
+        # model_swav = nn.parallel.DistributedDataParallel(model_swav, device_ids=[args.gpu_to_work_on], find_unused_parameters=True, )
 
         # build the queue
         queue = None
@@ -396,6 +398,12 @@ def main():
 
     start_date = get_date()
     start_time = get_time()
+
+    if os.path.exists('/home/hsyoon/job/SDS/log/' + start_date + '/') is False:
+        os.mkdir('/home/hsyoon/job/SDS/log/' + start_date)
+
+    if os.path.exists('/home/hsyoon/job/SDS/log/' + start_date + '/' + start_time + '/') is False:
+        os.mkdir('/home/hsyoon/job/SDS/log/' + start_date + '/' + start_time + '/')
 
     model.load_state_dict(torch.load(MNET_MODEL0_FILE))
     pmt_prob_model.load_state_dict(torch.load(PMT_MODEL0_FILE))
@@ -442,10 +450,10 @@ def main():
 
         print("DATA EXCHANGE STARTS...")
 
-        online_data_length = len(online_data_name_list)
-        for odi in range(online_data_length):
-            data_exchanger.exchange(online_data_name_list[odi])
-
+        # online_data_length = len(online_data_name_list)
+        # for odi in range(online_data_length):
+        #     data_exchanger.exchange(online_data_name_list[odi])
+        data_exchanger.exchange_whole(online_data_name_list)
         print("DATA EXCHANGE ENDS...")
 
         # TODO : Update data distribution index/rank in this step. (D0 -> D1, Pm0 -> Pm1, Pb0 -> Pb1, Po0 -> Po1)

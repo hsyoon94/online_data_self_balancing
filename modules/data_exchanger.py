@@ -13,11 +13,15 @@ class DataExchanger():
         self.dataset_dir = dataset_dir
         self.dataset_image_dir = dataset_image_dir
         self.dataset_name_list = [f1 for f1 in listdir(self.dataset_dir) if isfile(join(self.dataset_dir, f1))]
-        self.online_data_name_list = [f2 for f2 in listdir(self.online_data_dir) if isfile(join(self.online_data_dir, f2))]
+        self.pmt = None
+        self.pms = None
+        self.pmb = None
+        self.pm = None
+
 
     def update_data_list(self):
         self.dataset_name_list = [f1 for f1 in listdir(self.dataset_dir) if isfile(join(self.dataset_dir, f1))]
-        self.online_data_name_list = [f2 for f2 in listdir(self.online_data_dir) if isfile(join(self.online_data_dir, f2))]
+        self.dataset_name_list.sort()
 
     # Exchange data one by one.
     def exchange(self, online_novel_data_name):
@@ -39,3 +43,28 @@ class DataExchanger():
 
         discard_data_name = self.dataset_name_list[index]
         return discard_data_name
+
+    def exchange_whole(self, online_data_name_list):
+        self.online_data_name_list_length = len(online_data_name_list)
+        self.list_to_remove = list()
+
+        for file_index in range(len(self.dataset_name_list)):
+            with open(self.dataset_dir + self.dataset_name_list[file_index]) as tmp_json:
+                json_data = json.load(tmp_json)
+
+                final_prob = max(self.pmt(json_data['state'])) * max(self.pms(json_data['state'])) * max(self.pmb(json_data['state']))
+
+                self.list_to_remove.append(final_prob)
+
+        # TODO
+        self.index_list_to_remove = self.list_to_remove.largest(self.online_data_name_list_length)
+
+        for i in range(self.online_data_name_list_length):
+            # Discard from dataset
+            shutil.move(self.dataset_dir + self.dataset_name_list[self.index_list_to_remove], self.data_removal_dir + self.dataset_name_list[self.index_list_to_remove])
+            shutil.move(self.dataset_image_dir + self.dataset_name_list[self.index_list_to_remove].split('.')[0] + '.png', self.data_removal_dir + self.dataset_name_list[self.index_list_to_remove].split('.')[0] + '.png')
+
+            # Append novel data to dataset
+            shutil.move(self.online_data_dir + online_data_name_list[i], self.dataset_dir + online_data_name_list[i])
+            shutil.move(self.online_data_image_dir + online_data_name_list[i].split('.')[0] + '.png', self.dataset_image_dir + online_data_name_list[i].split('.')[0] + '.png')
+

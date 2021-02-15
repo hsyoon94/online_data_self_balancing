@@ -48,3 +48,7 @@ class DataBatchComposer():
         # prob = self.mt_net(data) * self.ms_net(data) * self.mb_net(data) * self.po(data)
         prob = 0.5
         return prob
+
+    def compute_prob(self):
+        # TODO: SORT WITH THE INDEX
+        return
