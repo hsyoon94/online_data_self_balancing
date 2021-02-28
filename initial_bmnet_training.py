@@ -3,7 +3,7 @@
 from modules.bmnet import MNet
 from modules.probability import motion_probability
 from modules.databatch_composer import DataBatchComposer
-from modules.data_exchanger import DataExchanger
+
 import carla
 import json
 import numpy as np
@@ -37,9 +37,9 @@ BRAKE_DISCR_DIM = 2
 brake_discr_th = 0.1
 
 TRAINING_ITERATION = 10000
-DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset/'
-ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
-REMOVAL_DATA_DIR = '/media/hsyoon/hard2/SDS/data_removal/'
+DATASET_DIR = '/media/hsyoon/hard2/SDS/dataset_initial/'
+# ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
+# REMOVAL_DATA_DIR = '/media/hsyoon/hard2/SDS/data_removal/'
 
 MNET_MODEL_SAVE_DIR = './trained_models/mnet/'
 PMT_MODEL_SAVE_DIR = './trained_models/pmt/'
@@ -63,7 +63,7 @@ def get_time():
 
 def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data_list, model_save_dir, pmt_save_dir, pms_save_dir, pmb_save_dir, criterion_mse, criterion_bce, optimizer_mnet, optimizer_pmt, optimizer_pms, optimizer_pmb, date, time, device):
 
-    databatch_composer = DataBatchComposer(dataset_dir, data_list, entropy_threshold=0.0, databatch_size=1)
+    databatch_composer = DataBatchComposer(dataset_dir, 0.0, 1, 64, 3, date, time)
 
     total_loss_mnet = 0
     total_loss_pt = 0
@@ -72,7 +72,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
 
     for iter in range(iteration):
 
-        batch_index = databatch_composer.get_databatch_list()
+        batch_index = databatch_composer.extract_random_batch_for_initial_training()
         for i in range(batch_index.shape[0]):
 
             try:
@@ -95,7 +95,7 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
                 loss = criterion_mse(model_output, torch.tensor(json_data['motion']).to(device))
                 loss.backward()
                 optimizer_mnet.step()
-                total_loss_mnet = total_loss_mnet + loss.cpu().detach()
+                total_loss_mnet = total_loss_mnet + loss.cpu().detach().numpy()
 
                 # PMNet update
                 if json_data['motion'][0] <= throttle_discr_th:
@@ -117,56 +117,66 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet, dataset_dir, data
 
                 optimizer_pmt.zero_grad()
                 pmtnet_output = pmtnet.forward(state_tensor).squeeze()
-                loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                # loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                loss_pmt = criterion_mse(pmtnet_output, pmt_output_gt)
                 loss_pmt.backward()
                 optimizer_pmt.step()
-                total_loss_pt = total_loss_pt + loss_pmt.cpu().detach()
+                total_loss_pt = total_loss_pt + loss_pmt.cpu().detach().numpy()
 
                 optimizer_pms.zero_grad()
                 pmsnet_output = pmsnet.forward(state_tensor).squeeze()
-                loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                # loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                loss_pms = criterion_mse(pmsnet_output, pms_output_gt)
                 loss_pms.backward()
                 optimizer_pms.step()
-                total_loss_ps = total_loss_ps + loss_pms.cpu().detach()
+                total_loss_ps = total_loss_ps + loss_pms.cpu().detach().numpy()
 
                 optimizer_pmb.zero_grad()
                 pmbnet_output = pmtnet.forward(state_tensor).squeeze()
-                loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                # loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                loss_pmb = criterion_mse(pmbnet_output, pmb_output_gt)
                 loss_pmb.backward()
                 optimizer_pmb.step()
-                total_loss_pb = total_loss_pb + loss_pmb.cpu().detach()
+                total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
 
-        if MODEL_SAVE is True and iter % 50 == 0:
-            # torch.save(model.state_dict(), model_save_dir + get_date() + '_' + get_time() + '_iter' + str(iter) + '.pt')
-            print("Iteration", iter, "for day", day)
+        # if MODEL_SAVE is True and iter % 50 == 0:
+        #     # torch.save(model.state_dict(), model_save_dir + get_date() + '_' + get_time() + '_iter' + str(iter) + '.pt')
+        #     print("Iteration", iter, "for day", day)
+        #
+        #     torch.save(model.state_dict(), model_save_dir + 'iter' + str(iter + 1) + '.pt')
+        #     torch.save(pmtnet.state_dict(), pmt_save_dir + 'iter' + str(iter + 1) + '.pt')
+        #     torch.save(pmsnet.state_dict(), pms_save_dir + 'iter' + str(iter + 1) + '.pt')
+        #     torch.save(pmbnet.state_dict(), pmb_save_dir + 'iter' + str(iter + 1) + '.pt')
 
-            torch.save(model.state_dict(), model_save_dir + 'iter' + str(iter + 1) + '.pt')
-            torch.save(pmtnet.state_dict(), pmt_save_dir + 'iter' + str(iter + 1) + '.pt')
-            torch.save(pmsnet.state_dict(), pms_save_dir + 'iter' + str(iter + 1) + '.pt')
-            torch.save(pmbnet.state_dict(), pmb_save_dir + 'iter' + str(iter + 1) + '.pt')
+        if iter % 10 == 0:
+            loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/initial_training_loss_mnet.txt', 'a')
+            loss_mnet_txt.write(str(total_loss_mnet) + '\n')
+            loss_mnet_txt.close()
 
-            if iter % 1000 == 0:
-                loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
-                loss_mnet_txt.write(str(total_loss_mnet) + '\n')
-                loss_mnet_txt.close()
+            loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/initial_training_loss_pmt.txt', 'a')
+            loss_pmt_txt.write(str(total_loss_pt) + '\n')
+            loss_pmt_txt.close()
 
-                loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmt.txt', 'a')
-                loss_pmt_txt.write(str(total_loss_pt) + '\n')
-                loss_pmt_txt.close()
+            loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/initial_training_loss_pms.txt', 'a')
+            loss_pms_txt.write(str(total_loss_ps) + '\n')
+            loss_pms_txt.close()
 
-                loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pms.txt', 'a')
-                loss_pms_txt.write(str(total_loss_ps) + '\n')
-                loss_pms_txt.close()
+            loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/initial_training_loss_pmb.txt', 'a')
+            loss_pmb_txt.write(str(total_loss_pb) + '\n')
+            loss_pmb_txt.close()
 
-                loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmb.txt', 'a')
-                loss_pmb_txt.write(str(total_loss_pb) + '\n')
-                loss_pmb_txt.close()
+            total_loss_mnet = 0
+            total_loss_pt = 0
+            total_loss_ps = 0
+            total_loss_pb = 0
+
+            print("Iter", iter, "training done for total interation ", iteration, "...")
 
     if MODEL_SAVE is True:
-        torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
-        torch.save(pmtnet.state_dict(), pmt_save_dir + 'day' + str(day + 1) + '.pt')
-        torch.save(pmsnet.state_dict(), pms_save_dir + 'day' + str(day + 1) + '.pt')
-        torch.save(pmbnet.state_dict(), pmb_save_dir + 'day' + str(day + 1) + '.pt')
+        torch.save(model.state_dict(), model_save_dir +'initial_day' + str(day + 1) + '.pt')
+        torch.save(pmtnet.state_dict(), pmt_save_dir + 'initial_day' + str(day + 1) + '.pt')
+        torch.save(pmsnet.state_dict(), pms_save_dir + 'initial_day' + str(day + 1) + '.pt')
+        torch.save(pmbnet.state_dict(), pmb_save_dir + 'initial_day' + str(day + 1) + '.pt')
         print("Day", day, "training ends and model saved to", get_date() + '_' + get_time() + '/final_of_day' + str(day + 1) + '.pt')
 
     else:
@@ -202,7 +212,6 @@ def main():
     day = 0
 
     print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "INITIAL INCREMENTAL INTELLIGENCE SYSTEM OPERATING...", sep="")
-
 
     data_list = [f for f in listdir(DATASET_DIR) if isfile(join(DATASET_DIR, f))]
 

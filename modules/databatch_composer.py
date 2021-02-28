@@ -88,6 +88,14 @@ class DataBatchComposer():
         fin_entropy = -1 * entropy
         return fin_entropy
 
+    def extract_random_batch_for_initial_training(self):
+        # Random sampling
+        self.data_list = [f for f in listdir(self.dataset_dir) if isfile(join(self.dataset_dir, f))]
+        start_index =  len(self.data_list) - 1
+        fin_index = int(len(self.data_list) / 100)
+        rnd_databatch = np.random.choice(start_index, fin_index ,replace=True)
+        return rnd_databatch
+
     def extract_random_batch(self):
         # Random sampling
         start_index =  len(self.data_list) - 1

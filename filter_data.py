@@ -7,8 +7,8 @@ from datetime import datetime
 import os
 import shutil
 
-data_raw_dir  = '/media/hsyoon/hard2/SDS/dataset/'
-PROBABILITY_THRESHOLD = 0.87
+data_raw_dir  = '/media/hsyoon/hard2/SDS/dataset_test/'
+PROBABILITY_THRESHOLD = 0.90
 
 data_name_list = [f for f in listdir(data_raw_dir) if isfile(join(data_raw_dir, f))]
 

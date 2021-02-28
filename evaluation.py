@@ -78,7 +78,7 @@ DATASET_IMAGE_DIR = '/media/hsyoon/hard2/SDS/dataset_image/image/'
 ONLINE_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_online/'
 ONLINE_DATA_IMAGE_DIR = '/media/hsyoon/hard2/SDS/dataset_online_image/image/'
 REMOVAL_DATA_DIR = '/media/hsyoon/hard2/SDS/data_removal/'
-TEST_DATA_DIR = '/media/hsyoon/hard2/SDS/test_dataset/'
+TEST_DATA_DIR = '/media/hsyoon/hard2/SDS/dataset_test/'
 
 MNET_MODEL_SAVE_DIR = './trained_models/mnet/'
 PMT_MODEL_SAVE_DIR = './trained_models/pmt/'
@@ -147,15 +147,15 @@ def test_model(model, pmtnet, pmsnet, pmbnet,
 
             with torch.no_grad():
                 pmtnet_output = pmtnet.forward(state_tensor).squeeze()
-                loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                loss_pmt = criterion_mse(pmtnet_output, pmt_output_gt)
                 total_loss_pt = total_loss_pt + loss_pmt.cpu().detach().numpy()
 
                 pmsnet_output = pmsnet.forward(state_tensor).squeeze()
-                loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                loss_pms = criterion_mse(pmsnet_output, pms_output_gt)
                 total_loss_ps = total_loss_ps + loss_pms.cpu().detach().numpy()
 
                 pmbnet_output = pmbnet.forward(state_tensor).squeeze()
-                loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                loss_pmb = criterion_mse(pmbnet_output, pmb_output_gt)
                 total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
 
     # Save loss!
@@ -208,9 +208,9 @@ def main():
         pmt_prob_model.load_state_dict(torch.load(PMT_MODEL_SAVE_DIR + 'day' + str(i) + '.pt'))
         pms_prob_model.load_state_dict(torch.load(PMS_MODEL_SAVE_DIR + 'day' + str(i) + '.pt'))
         pmb_prob_model.load_state_dict(torch.load(PMB_MODEL_SAVE_DIR + 'day' + str(i) + '.pt'))
-
+        print("DAY", i, "test starts")
         test_model(model, pmt_prob_model, pms_prob_model, pmb_prob_model, TEST_DATA_DIR, test_data_list, criterion_mse, criterion_bce, start_date, start_time, device)
-        print("Day", i, "test complete")
+        print("Day", i, "test completes")
 
 if __name__ == '__main__':
     main()

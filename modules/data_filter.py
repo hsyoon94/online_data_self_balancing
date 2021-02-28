@@ -144,8 +144,6 @@ class DataFilter():
                     pmb = self.pmb_net(online_state_tensor).cpu().detach().squeeze()
                     # po = self.po_net(cur_image.to(device)).cpu().detach().squeeze()
 
-                    # print("po", po)
-
                     if gt_motion[0] < throttle_discr_th:
                         self.pmt_gt_index = 0
                     else:

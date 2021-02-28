@@ -287,44 +287,52 @@ def train_model(day, iteration, model, pmtnet, pmsnet, pmbnet,
 
                 optimizer_pmt.zero_grad()
                 pmtnet_output = pmtnet.forward(state_tensor).squeeze()
-                loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                # loss_pmt = criterion_bce(pmtnet_output, pmt_output_gt)
+                loss_pmt = criterion_mse(pmtnet_output, pmt_output_gt)
                 loss_pmt.backward()
                 optimizer_pmt.step()
                 total_loss_pt = total_loss_pt + loss_pmt.cpu().detach().numpy()
 
                 optimizer_pms.zero_grad()
                 pmsnet_output = pmsnet.forward(state_tensor).squeeze()
-                loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                # loss_pms = criterion_bce(pmsnet_output, pms_output_gt)
+                loss_pms = criterion_mse(pmsnet_output, pms_output_gt)
                 loss_pms.backward()
                 optimizer_pms.step()
                 total_loss_ps = total_loss_ps + loss_pms.cpu().detach().numpy()
 
                 optimizer_pmb.zero_grad()
                 pmbnet_output = pmbnet.forward(state_tensor).squeeze()
-                loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                # loss_pmb = criterion_bce(pmbnet_output, pmb_output_gt)
+                loss_pmb = criterion_mse(pmbnet_output, pmb_output_gt)
                 loss_pmb.backward()
                 optimizer_pmb.step()
                 total_loss_pb = total_loss_pb + loss_pmb.cpu().detach().numpy()
 
-        if iter % 10 == 0:
+        # Save loss for every batches!
+        loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
+        loss_mnet_txt.write(str(total_loss_mnet) + '\n')
+        loss_mnet_txt.close()
+
+        loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmt.txt', 'a')
+        loss_pmt_txt.write(str(total_loss_pt) + '\n')
+        loss_pmt_txt.close()
+
+        loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pms.txt', 'a')
+        loss_pms_txt.write(str(total_loss_ps) + '\n')
+        loss_pms_txt.close()
+
+        loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmb.txt', 'a')
+        loss_pmb_txt.write(str(total_loss_pb) + '\n')
+        loss_pmb_txt.close()
+
+        total_loss_mnet = 0
+        total_loss_pt = 0
+        total_loss_ps = 0
+        total_loss_pb = 0
+
+        if iter % 10 == 0 :
             print("[", get_date(), "-", get_time()[0:2], ":", get_time()[2:] , "]", "Iteration", iter, "for day", day)
-
-    # Save loss!
-    loss_mnet_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_mnet.txt', 'a')
-    loss_mnet_txt.write(str(total_loss_mnet) + '\n')
-    loss_mnet_txt.close()
-
-    loss_pmt_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmt.txt', 'a')
-    loss_pmt_txt.write(str(total_loss_pt) + '\n')
-    loss_pmt_txt.close()
-
-    loss_pms_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pms.txt', 'a')
-    loss_pms_txt.write(str(total_loss_ps) + '\n')
-    loss_pms_txt.close()
-
-    loss_pmb_txt = open('/home/hsyoon/job/SDS/log/' + date + '/' + time + '/training_loss_pmb.txt', 'a')
-    loss_pmb_txt.write(str(total_loss_pb) + '\n')
-    loss_pmb_txt.close()
 
     if MODEL_SAVE is True:
         torch.save(model.state_dict(), model_save_dir +'day' + str(day + 1) + '.pt')
